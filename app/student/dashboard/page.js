@@ -1,5 +1,8 @@
 "use client";
+import { Component } from "lucide-react";
 import { useEffect, useState } from "react";
+import Sidebar from "@/components/sideBar";
+import Header from "@/components/Header";
 
 const StudentDashboard = () => {
   const [studentData, setStudentData] = useState(null);
@@ -48,24 +51,37 @@ const StudentDashboard = () => {
   }, []);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-3xl p-6 bg-white rounded-lg shadow-md">
-        <h2 className="mb-4 text-2xl font-bold">Student Dashboard</h2>
-        {studentData ? (
-          <div>
-            <h3 className="text-lg font-semibold">Welcome, {studentData.name}</h3>
-            {studentData.email ? (
-              <p>Email: {studentData.email}</p>
-            ) : (
-              <p>Email: N/A</p>
-            )}
-            <p>University ID: {studentData.universityId}</p>
-          </div>
-        ) : (
-          <p>Loading student data...</p>
-        )}
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1">
+        <Header title="Student Dashboard" />
+        <div className="p-8 bg-gray-50 min-h-screen">
+          <h1 className="text-3xl font-bold mb-4">Student Dashboard</h1>
+          {studentData ? (
+            <>
+              <p className="mb-4">Welcome, {studentData.email}!</p>
+              <p>Name: {studentData.name}</p>
+              <p>Grade: {studentData.class}</p>
+              <p>Roll Number: {studentData.universityId}</p>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("isStudentLoggedIn");
+                  localStorage.removeItem("authToken");
+                  window.location.href = "/student/login";
+                }}
+                className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <p>Loading...</p>
+          )}
+        </div>
       </div>
+
     </div>
+      
   );
 };
 

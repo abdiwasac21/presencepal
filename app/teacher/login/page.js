@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import SideBar from '@/components/teacher/sideBar';
+import SideBar from '@/components/sideBar';
 
 const LoginForm = () => {
     const [email, setEmail] = useState('');
