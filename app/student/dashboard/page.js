@@ -1,7 +1,7 @@
 "use client";
 import { Component } from "lucide-react";
 import { useEffect, useState } from "react";
-import Sidebar from "@/components/sideBar";
+import StudentSideBar from "@/components/StudentSideBar";
 import Header from "@/components/Header";
 
 const StudentDashboard = () => {
@@ -50,9 +50,15 @@ const StudentDashboard = () => {
     fetchStudentData();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("isStudentLoggedIn");
+    localStorage.removeItem("authToken");
+    window.location.href = "/student/login";
+  }
+
   return (
     <div className="flex">
-      <Sidebar />
+      <StudentSideBar />
       <div className="flex-1">
         <Header title="Student Dashboard" />
         <div className="p-8 bg-gray-50 min-h-screen">
@@ -64,11 +70,7 @@ const StudentDashboard = () => {
               <p>Grade: {studentData.class}</p>
               <p>Roll Number: {studentData.universityId}</p>
               <button
-                onClick={() => {
-                  localStorage.removeItem("isStudentLoggedIn");
-                  localStorage.removeItem("authToken");
-                  window.location.href = "/student/login";
-                }}
+                onClick={handleLogout}
                 className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
               >
                 Logout

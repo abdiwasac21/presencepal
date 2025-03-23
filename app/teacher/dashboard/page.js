@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import Sidebar from '@/components/sideBar';
+import  Sidebar  from '@/components/sideBar';
 import Header from '@/components/Header';
 
 const TeacherDashboard = () => {
