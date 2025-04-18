@@ -60,7 +60,6 @@ const ClassCreate = () => {
       <div className="flex-1 p-6">
         <Header title="Create New Class" />
         <div className="max-w-2xl mx-auto bg-white p-8 shadow rounded">
-          <h1 className="text-3xl font-bold text-center mb-6">Create New Class</h1>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">

@@ -10,6 +10,9 @@ const CoursesCreate = () => {
   const [courses, setCourses] = useState([{ name: "", code: "" }]);
   const [message, setMessage] = useState("");
 
+  // Retrieve auth token from localStorage
+  const token = localStorage.getItem("authToken");
+
   const handleSingleChange = (e) => {
     setSingleCourse({
       ...singleCourse,
@@ -29,6 +32,7 @@ const CoursesCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
       let payload;
       let url;
@@ -45,12 +49,16 @@ const CoursesCreate = () => {
         };
         url = "http://localhost:80/teacher/create/course";
       }
-
+  
       const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // ✅ token is now properly defined
+        },
         body: JSON.stringify(payload)
       });
+  
       const data = await response.json();
       setMessage(data.message || "Course(s) added successfully");
     } catch (error) {
@@ -58,6 +66,7 @@ const CoursesCreate = () => {
       setMessage("Failed to add course(s)");
     }
   };
+  
 
   return (
     <div className="min-h-screen flex">
@@ -75,12 +84,14 @@ const CoursesCreate = () => {
         <div className="mb-6 flex justify-center space-x-4">
           <button 
             onClick={() => setCreationType("single")}
-            className={`px-4 py-2 rounded ${creationType === "single" ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-800"}`}>
+            className={`px-4 py-2 rounded ${creationType === "single" ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-800"}`}
+          >
             Single Course
           </button>
           <button 
             onClick={() => setCreationType("multiple")}
-            className={`px-4 py-2 rounded ${creationType === "multiple" ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-800"}`}>
+            className={`px-4 py-2 rounded ${creationType === "multiple" ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-800"}`}
+          >
             Multiple Courses
           </button>
         </div>
