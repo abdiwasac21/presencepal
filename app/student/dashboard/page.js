@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import StudentSideBar from "@/components/StudentSideBar";
 import Header from "@/components/Header";
 
+const baseUrl = "http://localhost:80";
+
 const StudentDashboard = () => {
   const [studentData, setStudentData] = useState(null);
 
@@ -24,7 +26,7 @@ const StudentDashboard = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:80/student/data", {
+        const response = await fetch(`${baseUrl}student/data`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
