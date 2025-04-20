@@ -1,65 +1,142 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from "@/components/sideBar";
 import Header from "@/components/Header";
 
-const ClassCreate = () => {
+
+const baseUrl = "http://localhost:80"; // Adjust this to your actual base URL
+
+
+const ClassPage = () => {
   const [className, setClassName] = useState("");
-  const [selectedStudents, setSelectedStudents] = useState([]);
-  const [selectedCourses, setSelectedCourses] = useState([]);
   const [message, setMessage] = useState("");
+  const [classes, setClasses] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [courseMap, setCourseMap] = useState({});
 
-  // Dummy options with example IDs (replace with real data as necessary)
-  const studentOptions = [
-    { id: "67d81341caa4ea3c365bae9c", name: "Student A" },
-    { id: "67dff353efddae447470683a", name: "Student B" },
-    { id: "67dff354efddae447470683d", name: "Student C" },
-    { id: "67dffc675a5ef5fd4c952926", name: "Student D" }
-  ];
+  useEffect(() => {
+    fetchClasses();
+    fetchCourses();
+  }, []);
 
-  const courseOptions = [
-    { id: "67e3ec63aeefe8ca531ef5cf", name: "Course 101" },
-    { id: "67e3ec63aeefe8ca531ef5d1", name: "Course 102" },
-    { id: "67e3ec63aeefe8ca531ef5d3", name: "Course 103" },
-    { id: "67e3ec63aeefe8ca531ef5d5", name: "Course 104" },
-    { id: "67e3ec63aeefe8ca531ef5d7", name: "Course 105" }
-  ];
-
-  const toggleSelection = (id, selection, setSelection) => {
-    setSelection(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
+   const fetchClasses = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      console.log("Fetching classes with token:", token);
+      const res = await fetch("http://localhost:80/teacher/classes", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      console.log("Fetch response status:", res.status);
+      const text = await res.text();
+      console.log("Raw response text:", text);
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseErr) {
+        console.error("Failed to parse JSON:", parseErr);
+        setMessage("Invalid server response");
+        return;
+      }
+      console.log("Parsed data:", data);
+      setClasses(data || []);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setMessage("Failed to fetch classes");
+    }
   };
 
+  const fetchCourses = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+      const res = await fetch("http://localhost:80/teacher/courses", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await res.json();
+      // data should be an array of courses
+      const map = {};
+      (Array.isArray(data) ? data : (data.courses || [])).forEach(course => {
+        map[course._id] = course.name;
+      });
+      setCourseMap(map);
+    } catch (err) {
+      console.error("Failed to fetch courses", err);
+    }
+  };
+
+  // Create a new class
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('/teacher/class/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: className,
-          students: selectedStudents,
-          courses: selectedCourses
-        })
+      const token = localStorage.getItem("authToken");
+      const res = await fetch("http://localhost:80/teacher/create/class", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: className })
       });
-      const data = await response.json();
+      const data = await res.json();
       setMessage(data.message || "Class created successfully");
-    } catch (error) {
-      console.error("Error creating class:", error);
+      setClassName("");
+      fetchClasses();
+    } catch (err) {
       setMessage("Failed to create class");
+    }
+  };
+
+  // ...rest of your code remains unchanged...
+
+  // Delete a class
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this class?")) return;
+    try {
+      const token = localStorage.getItem("authToken");
+      await fetch(`${baseUrl}/teacher/class/${id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      setMessage("Class deleted");
+      fetchClasses();
+    } catch (err) {
+      setMessage("Failed to delete class");
+    }
+  };
+
+  // Start editing a class
+  const startEdit = (id, name) => {
+    setEditingId(id);
+    setEditName(name);
+  };
+
+  // Save class name update
+  const handleUpdate = async (id) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      await fetch(`${baseUrl}/teacher/class/${id}`, {
+        method: "PATCH",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ name: editName })
+      });
+      setEditingId(null);
+      setEditName("");
+      setMessage("Class updated");
+      fetchClasses();
+    } catch (err) {
+      setMessage("Failed to update class");
     }
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* Sidebar */}
       <Sidebar />
-
-      {/* Main Content */}
       <div className="flex-1 p-6">
-        <Header title="Create New Class" />
-        <div className="max-w-2xl mx-auto bg-white p-8 shadow rounded">
+        <Header title="Manage Classes" />
+        <div className="max-w-2xl mx-auto bg-white p-8 shadow rounded mb-8">
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -71,41 +148,8 @@ const ClassCreate = () => {
                 onChange={(e) => setClassName(e.target.value)}
                 required
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                placeholder="Enter new class name"
               />
-            </div>
-            <div className="mb-6">
-              <h3 className="text-lg font-bold mb-2">Select Students:</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {studentOptions.map(student => (
-                  <label key={student.id} className="flex items-center space-x-2">
-                    <input 
-                      type="checkbox"
-                      value={student.id}
-                      onChange={() => toggleSelection(student.id, selectedStudents, setSelectedStudents)}
-                      checked={selectedStudents.includes(student.id)}
-                      className="form-checkbox h-5 w-5 text-blue-600"
-                    />
-                    <span className="text-gray-700">{student.name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div className="mb-6">
-              <h3 className="text-lg font-bold mb-2">Select Courses:</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {courseOptions.map(course => (
-                  <label key={course.id} className="flex items-center space-x-2">
-                    <input 
-                      type="checkbox"
-                      value={course.id}
-                      onChange={() => toggleSelection(course.id, selectedCourses, setSelectedCourses)}
-                      checked={selectedCourses.includes(course.id)}
-                      className="form-checkbox h-5 w-5 text-blue-600"
-                    />
-                    <span className="text-gray-700">{course.name}</span>
-                  </label>
-                ))}
-              </div>
             </div>
             <div className="text-center">
               <button 
@@ -118,9 +162,76 @@ const ClassCreate = () => {
           </form>
           {message && <p className="mt-4 text-center text-sm text-gray-700">{message}</p>}
         </div>
+
+        <div className="max-w-3xl mx-auto bg-white p-8 shadow rounded">
+          <h2 className="text-2xl font-bold mb-4 text-blue-700">All Classes</h2>
+          {classes.length === 0 && <p className="text-gray-500">No classes found.</p>}
+          <ul className="space-y-6">
+            {classes.map(cls => (
+              <li key={cls._id} className="border-b pb-4">
+                <div className="flex items-center justify-between">
+                  {editingId === cls._id ? (
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={e => setEditName(e.target.value)}
+                        className="px-2 py-1 border rounded"
+                      />
+                      <button
+                        onClick={() => handleUpdate(cls._id)}
+                        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-lg">{cls.name}</span>
+                      <div className="space-x-2">
+                        <button
+                          onClick={() => startEdit(cls._id, cls.name)}
+                          className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(cls._id)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="mt-2 ml-2">
+                  <span className="font-medium text-gray-700">Courses:</span>
+                                        <ul className="list-disc ml-6">
+                      {(cls.courses && cls.courses.length > 0) ? (
+                        cls.courses.map(courseId => (
+                          <li key={courseId} className="text-gray-800">
+                            {courseMap[courseId] || <span className="text-gray-400 italic">Unknown Course</span>}
+                          </li>
+                        ))
+                      ) : (
+                        <li className="text-gray-400 italic">No courses assigned</li>
+                      )}
+                    </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ClassCreate;
+export default ClassPage;

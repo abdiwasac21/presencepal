@@ -3,15 +3,14 @@ import React, { useState } from 'react';
 import Sidebar from "@/components/sideBar";
 import Header from "@/components/Header";
 
+const baseUrl = "http://localhost:80"; // Adjust this to your actual base URL
+
 const CoursesCreate = () => {
   const [creationType, setCreationType] = useState("single"); // "single" or "multiple"
-  const [singleCourse, setSingleCourse] = useState({ name: "", code: "" });
+  const [singleCourse, setSingleCourse] = useState({ name: "", code: "", className: "" });
   const [batchName, setBatchName] = useState("");
   const [courses, setCourses] = useState([{ name: "", code: "" }]);
   const [message, setMessage] = useState("");
-
-  // Retrieve auth token from localStorage
-  const token = localStorage.getItem("authToken");
 
   const handleSingleChange = (e) => {
     setSingleCourse({
@@ -32,48 +31,49 @@ const CoursesCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     try {
       let payload;
       let url;
+      const token = localStorage.getItem("authToken");
       if (creationType === "single") {
         payload = {
           name: singleCourse.name,
-          code: singleCourse.code
+          code: singleCourse.code,
+          className: singleCourse.className || undefined
         };
-        url = "http://localhost:80/teacher/create/single/course";
+        url = `${baseUrl}/teacher/create/single/course`;
       } else {
         payload = {
           name: batchName,
           courses: courses
         };
-        url = "http://localhost:80/teacher/create/course";
+        url = `${baseUrl}/teacher/create/course`;
       }
-  
+
       const response = await fetch(url, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // ✅ token is now properly defined
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(payload)
       });
-  
+
       const data = await response.json();
       setMessage(data.message || "Course(s) added successfully");
+      // Reset form
+      setSingleCourse({ name: "", code: "", className: "" });
+      setBatchName("");
+      setCourses([{ name: "", code: "" }]);
     } catch (error) {
       console.error("Error creating courses:", error);
       setMessage("Failed to add course(s)");
     }
   };
-  
 
   return (
     <div className="min-h-screen flex">
-      {/* Sidebar on the left */}
       <Sidebar />
-
-      {/* Main content area */}
       <div className="flex-1 p-6">
         <Header title="Create Courses" />
 
@@ -83,12 +83,14 @@ const CoursesCreate = () => {
 
         <div className="mb-6 flex justify-center space-x-4">
           <button 
+            type="button"
             onClick={() => setCreationType("single")}
             className={`px-4 py-2 rounded ${creationType === "single" ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-800"}`}
           >
             Single Course
           </button>
           <button 
+            type="button"
             onClick={() => setCreationType("multiple")}
             className={`px-4 py-2 rounded ${creationType === "multiple" ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-800"}`}
           >
@@ -122,6 +124,19 @@ const CoursesCreate = () => {
                     onChange={handleSingleChange}
                     required
                     className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                  />
+                </label>
+              </div>
+              <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">
+                  Class Name (optional):
+                  <input 
+                    type="text" 
+                    name="className"
+                    value={singleCourse.className}
+                    onChange={handleSingleChange}
+                    className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                    placeholder="Assign to class (optional)"
                   />
                 </label>
               </div>
