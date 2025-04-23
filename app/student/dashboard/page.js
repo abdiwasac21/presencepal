@@ -26,7 +26,7 @@ const StudentDashboard = () => {
           return;
         }
 
-        const response = await fetch(`${baseUrl}student/data`, {
+        const response = await fetch(`${baseUrl}/student/data`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -67,13 +67,27 @@ const StudentDashboard = () => {
           <h1 className="text-3xl font-bold mb-4">Student Dashboard</h1>
           {studentData ? (
             <>
-              <p className="mb-4">Welcome, {studentData.email}!</p>
-              <p>Name: {studentData.name}</p>
-              <p>Grade: {studentData.class}</p>
-              <p>Roll Number: {studentData.universityId}</p>
+              <p className="mb-4">Welcome, {studentData.student?.email || studentData.student?.name}!</p>
+              <p>Name: {studentData.student?.name}</p>
+              <p>Grade: {studentData.class?.name || "N/A"}</p>
+              <p>Roll Number: {studentData.student?.universityId}</p>
+              <div className="mt-4">
+                <span className="font-semibold">Courses:</span>
+                <ul className="list-disc ml-6">
+                  {studentData.class?.courses && studentData.class.courses.length > 0 ? (
+                    studentData.class.courses.map(course => (
+                      <li key={course._id}>
+                        {course.name} <span className="text-xs text-gray-500">({course.code})</span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-400 italic">No courses assigned</li>
+                  )}
+                </ul>
+              </div>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
+                className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 mt-6"
               >
                 Logout
               </button>
