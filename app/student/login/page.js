@@ -25,7 +25,19 @@ const StudentLogin = () => {
             });
     
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                // Try to get error message from backend
+                let errorMsg = "Invalid university ID or password.";
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.message) {
+                        errorMsg = errorData.message;
+                    }
+                } catch {
+                    // If response is not JSON, keep default errorMsg
+                }
+                alert(errorMsg);
+                setLoading(false);
+                return;
             }
     
             const data = await response.json();
