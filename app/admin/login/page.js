@@ -1,6 +1,7 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import SideBar from '@/components/sideBar';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:80/api/auth/teacher/signin', {
+      const response = await fetch('http://localhost:80/api/auth/signin/email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,10 +25,12 @@ const LoginForm = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('Login successful:', data);
+        // Store the auth token in localStorage so it can be used in future requests.
         localStorage.setItem('authToken', data.token);
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('email', email);
 
+        // Redirect to the teacher dashboard.
         router.push('/teacher/dashboard');
       } else {
         alert('Invalid credentials');
