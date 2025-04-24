@@ -1,22 +1,47 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import  Sidebar  from '@/components/sideBar';
+import Sidebar from '@/components/sideBar';
 import Header from '@/components/Header';
 
 const TeacherDashboard = () => {
     const router = useRouter();
     const [user, setUser] = useState(null);
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loggedIn = localStorage.getItem('loggedIn');
         const email = localStorage.getItem('email');
         if (loggedIn && email) {
             setUser({ email });
+            // Fetch courses for this teacher
+            fetchCourses(email);
         } else {
             router.push('/teacher/login');
         }
     }, [router]);
+
+    const fetchCourses = async (email) => {
+        try {
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`http://localhost:80/api/teacher/courses?email=${email}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setCourses(data.data || []);
+            } else {
+                setCourses([]);
+            }
+        } catch (error) {
+            setCourses([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('loggedIn');
@@ -26,9 +51,7 @@ const TeacherDashboard = () => {
 
     return (
         <div className="flex">
-            {/* Sidebar on the left */}
             <Sidebar />
-            {/* Main dashboard content */}
             <div className="flex-1">
                 <Header title="Teacher Dashboard" />
                 <div className="p-8 bg-gray-50 min-h-screen">
@@ -36,13 +59,28 @@ const TeacherDashboard = () => {
                     {user ? (
                         <>
                             <p className="mb-4">Welcome, {user.email}!</p>
-                            <p>Name: {user.username}</p>
                             <button
                                 onClick={handleLogout}
-                                className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700"
+                                className="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 mb-6"
                             >
                                 Logout
                             </button>
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">Your Courses</h2>
+                                {loading ? (
+                                    <p>Loading courses...</p>
+                                ) : courses.length > 0 ? (
+                                    <ul className="list-disc pl-5">
+                                        {courses.map((course) => (
+                                            <li key={course.id || course._id} className="mb-1">
+                                                {course.name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>No courses found.</p>
+                                )}
+                            </div>
                         </>
                     ) : (
                         <p>Please log in first.</p>
