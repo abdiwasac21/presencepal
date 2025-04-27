@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@shadcn/ui": "^0.0.4",
+    "@zxing/library": "^0.21.3",
     "lucide-react": "^0.483.0",
     "next": "15.2.2",
     "papaparse": "^5.5.2",
