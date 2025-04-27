@@ -2,101 +2,70 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-green-50 to-green-200 dark:from-gray-900 dark:to-green-950">
+      {/* Hero Section */}
+      <header className="w-full py-12 flex flex-col items-center justify-center bg-green-800 dark:bg-green-900 text-white shadow-lg">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+          src="/amoud-logo.jpeg"
+          alt="Amoud University Logo"
+          width={80}
+          height={80}
+          className="mb-4 rounded-full shadow-lg"
         />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+        <h1 className="text-4xl sm:text-5xl font-bold mb-2 text-center">
+          PresencePal
+        </h1>
+        <p className="text-lg sm:text-xl font-medium text-center max-w-2xl">
+          A Smart Attendance & Presence Management Solution <br />
+          <span className="text-green-200 font-semibold">
+            Dedicated for Amoud University
+          </span>
+        </p>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+      {/* Features Section */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+        <section className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col items-center">
+            <Image src="/analytics.jpg" alt="Attendance" width={48} height={48} />
+            <h2 className="mt-4 text-xl font-semibold text-green-800 dark:text-green-200">Easy Attendance</h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-300 text-center">
+              Effortlessly track student and staff attendance with real-time updates.
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col items-center">
+            <Image src="/analysis.jpg" alt="Analytics" width={48} height={48} />
+            <h2 className="mt-4 text-xl font-semibold text-green-800 dark:text-green-200">Smart Analytics</h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-300 text-center">
+              Get insights and reports to improve engagement and performance.
+            </p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col items-center">
+            <Image src="/secure.jpg" alt="Secure" width={48} height={48} />
+            <h2 className="mt-4 text-xl font-semibold text-green-800 dark:text-green-200">Secure & Reliable</h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-300 text-center">
+              Built with privacy and security in mind for Amoud University.
+            </p>
+          </div>
+        </section>
+
+        {/* Call to Action */}
+        <div className="mt-12 flex flex-col items-center">
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#"
+            className="bg-green-800 hover:bg-green-900 text-white font-semibold px-8 py-3 rounded-full shadow transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
+            Get Started
           </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          <p className="mt-4 text-gray-700 dark:text-gray-300 text-center">
+            Join Amoud University in revolutionizing attendance management.
+          </p>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="w-full py-6 text-center text-gray-600 dark:text-gray-400 text-sm">
+        &copy; {new Date().getFullYear()} PresencePal &mdash; Dedicated for Amoud University
       </footer>
     </div>
   );
