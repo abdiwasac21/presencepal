@@ -5,6 +5,13 @@ import { useState } from 'react';
 
 const StudentSideBar = () => {
     const [attendanceOpen, setAttendanceOpen] = useState(false);
+
+    const handleLogout = () => {
+        localStorage.removeItem("isStudentLoggedIn");
+        localStorage.removeItem("studentAuthToken");
+        window.location.href = "/student/login";
+    };
+
     return (
         <div className="h-screen w-64 bg-gray-800 text-white flex flex-col p-4">
             <h1 className="text-2xl font-bold mb-6">PresencePal</h1>
@@ -36,9 +43,12 @@ const StudentSideBar = () => {
                         </div>
                     )}
                 </div>
-                <Link href="/app/student/logout" className="flex items-center gap-2 p-2 mt-auto text-red-400 hover:bg-gray-700">
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 p-2 mt-auto text-red-400 hover:bg-gray-700 rounded-md"
+                >
                     <LogOut className="w-5 h-5" /> Logout
-                </Link>
+                </button>
             </nav>
         </div>
     )

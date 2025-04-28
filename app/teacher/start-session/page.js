@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/sideBar';
 import Header from '@/components/Header';
+import { BrowserQRCodeSvgWriter } from '@zxing/library';
 
 export default function TeacherStartSessionPage() {
   const [courses, setCourses] = useState([]);
@@ -10,10 +11,11 @@ export default function TeacherStartSessionPage() {
   const [sessionId, setSessionId] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [qrCodeSvg, setQrCodeSvg] = useState('');
   const router = useRouter();
 
+  // Fetch courses only on mount
   useEffect(() => {
-    // Fetch teacher's courses
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem('authToken');
@@ -30,9 +32,18 @@ export default function TeacherStartSessionPage() {
     fetchCourses();
   }, []);
 
+  // Generate QR code SVG whenever sessionId changes
+  useEffect(() => {
+    if (sessionId) {
+      const writer = new BrowserQRCodeSvgWriter();
+      const svgElement = writer.write(sessionId, 256, 256);
+      setQrCodeSvg(svgElement.outerHTML);
+    } else {
+      setQrCodeSvg('');
+    }
+  }, [sessionId]);
 
-
-const handleStartSession = async (e) => {
+  const handleStartSession = async (e) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg('');
@@ -43,7 +54,7 @@ const handleStartSession = async (e) => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       });
       const { latitude, longitude } = position.coords;
-  
+
       const token = localStorage.getItem('authToken');
       const res = await fetch('http://localhost:80/api/teacher/start-session', {
         method: 'POST',
@@ -69,7 +80,6 @@ const handleStartSession = async (e) => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="min-h-screen flex bg-gray-100">
@@ -78,7 +88,7 @@ const handleStartSession = async (e) => {
         <Header title="Start Attendance Session" />
         <main className="flex-1 flex flex-col items-center justify-center p-6">
           <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 flex flex-col items-center">
-            <h1 className="text-2xl font-bold mb-4 text-center">Start Attendance Session</h1>
+            <h1 className="text-2xl font-bold mb-4 text-center text-blue-800">Start Attendance Session</h1>
             {errorMsg && (
               <div className="mb-4 text-red-600 text-center">{errorMsg}</div>
             )}
@@ -105,10 +115,13 @@ const handleStartSession = async (e) => {
               </button>
             </form>
             {sessionId && (
-              <div className="mt-8 flex flex-col items-center">
+              <div className="mt-4 flex flex-col items-center">
                 <p className="mb-2 text-green-700 font-semibold">Session Started!</p>
-                <p className="mb-2 text-gray-700 break-all">Session ID: {sessionId}</p>
-                {/* To display as QR code, use a QR code library */}
+                <div
+                  className="my-2"
+                  dangerouslySetInnerHTML={{ __html: qrCodeSvg }}
+                />
+                <p className="mt-4 text-gray-700 text-sm break-all">Session ID: {sessionId}</p>
               </div>
             )}
           </div>
