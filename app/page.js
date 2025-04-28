@@ -27,21 +27,21 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <section className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col items-center">
-            <Image src="/analytics.jpg" alt="Attendance" width={48} height={48} />
+            <Image src="/analytics.jpg" alt="Attendance" width={120} height={120} />
             <h2 className="mt-4 text-xl font-semibold text-green-800 dark:text-green-200">Easy Attendance</h2>
             <p className="mt-2 text-gray-600 dark:text-gray-300 text-center">
               Effortlessly track student and staff attendance with real-time updates.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col items-center">
-            <Image src="/analysis.jpg" alt="Analytics" width={48} height={48} />
+            <Image src="/analysis.jpg" alt="Analytics" width={120} height={120} />
             <h2 className="mt-4 text-xl font-semibold text-green-800 dark:text-green-200">Smart Analytics</h2>
             <p className="mt-2 text-gray-600 dark:text-gray-300 text-center">
               Get insights and reports to improve engagement and performance.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 flex flex-col items-center">
-            <Image src="/secure.jpg" alt="Secure" width={48} height={48} />
+            <Image src="/secure.jpg" alt="Secure" width={120} height={120} />
             <h2 className="mt-4 text-xl font-semibold text-green-800 dark:text-green-200">Secure & Reliable</h2>
             <p className="mt-2 text-gray-600 dark:text-gray-300 text-center">
               Built with privacy and security in mind for Amoud University.
@@ -52,7 +52,7 @@ export default function Home() {
         {/* Call to Action */}
         <div className="mt-12 flex flex-col items-center">
           <a
-            href="#"
+            href="/student/login"
             className="bg-green-800 hover:bg-green-900 text-white font-semibold px-8 py-3 rounded-full shadow transition"
           >
             Get Started
