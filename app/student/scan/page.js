@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { BrowserMultiFormatReader } from '@zxing/library';
-import Sidebar from '@/components/sideBar';
+import Sidebar from '@/components/StudentSideBar';
 import Header from '@/components/Header';
 
 export default function StudentScanPage() {
@@ -16,6 +16,11 @@ export default function StudentScanPage() {
   const codeReader = useMemo(() => new BrowserMultiFormatReader(), []);
 
   useEffect(() => {
+    const token = localStorage.getItem('studentAuthToken');
+    if (!token) {  
+        router.push('/student/login');
+        return;
+        }
     let active = true;
     if (videoRef.current) {
       codeReader.decodeFromVideoDevice(null, videoRef.current, (result, error) => {
@@ -39,19 +44,39 @@ export default function StudentScanPage() {
     // eslint-disable-next-line
   }, [codeReader]);
 
-  const handleSendAttendance = async (sessionId) => {
+
+const handleSendAttendance = async (sessionId) => {
     setLoading(true);
     setErrorMsg('');
     setSuccessMsg('');
     try {
-      const token = localStorage.getItem('authToken');
+      // Get geolocation
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+      const { latitude, longitude } = position.coords;
+  
+      // Get deviceToken (adjust the key if you use a different one)
+      const deviceToken = localStorage.getItem('deviceToken');
+      if (!deviceToken) {
+        setErrorMsg('Device token not found. Please log in again.');
+        setLoading(false);
+        return;
+      }
+      const token = localStorage.getItem('studentAuthToken');
+      console.log('Token:', token);
+  
       const res = await fetch('http://localhost:80/student/scan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ sessionId }),
+        body: JSON.stringify({
+          sessionId,
+          location: { lat: latitude, lng: longitude },
+          deviceToken,
+        }),
       });
       const data = await res.json();
       if (res.ok) {
@@ -66,6 +91,7 @@ export default function StudentScanPage() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex bg-gray-100">

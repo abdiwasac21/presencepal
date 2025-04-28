@@ -18,7 +18,7 @@ const StudentDashboard = () => {
 
     const fetchStudentData = async () => {
       try {
-        const authToken = localStorage.getItem("authToken");
+        const authToken = localStorage.getItem("studentAuthToken");
         console.log("Auth Token:", authToken); // Log the token to make sure it's correct
         
         if (!authToken) {
@@ -54,7 +54,7 @@ const StudentDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("isStudentLoggedIn");
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("studentAuthToken");
     window.location.href = "/student/login";
   }
 

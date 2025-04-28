@@ -8,10 +8,12 @@ const StudentLogin = () => {
     const [loading, setLoading] = useState(false); // Loading state
     const router = useRouter();
 
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-    
         try {
             const response = await fetch('http://localhost:80/api/auth/student/login', {
                 method: 'POST',
@@ -45,9 +47,13 @@ const StudentLogin = () => {
     
             // Save the token and login state in localStorage
             localStorage.setItem('isStudentLoggedIn', 'true');
-            localStorage.setItem('authToken', data.token); // Store the auth token
-            localStorage.setItem('studentName', data.student.name); // Store the student name
-    
+            localStorage.setItem('studentAuthToken', data.token); // Store the auth token
+            localStorage.setItem('studentName', data.student.name);
+            if (data.student.deviceToken) {
+                localStorage.setItem('deviceToken', data.student.deviceToken);
+            } else {
+                localStorage.setItem('deviceToken', 'dummy-device-token');
+            }
             // Redirect to the student dashboard
             router.push('/student/dashboard');
         } catch (error) {
@@ -68,18 +74,18 @@ const StudentLogin = () => {
                         placeholder="University ID"
                         value={universityId}
                         onChange={(e) => setUniversityId(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <input
                         type="password"
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                     />
                     <button
                         type="submit"
-                        className={`w-full py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`w-full py-2 text-white bg-green-600 rounded-md hover:bg-green-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         disabled={loading}
                     >
                         {loading ? 'Logging in...' : 'Login'}
