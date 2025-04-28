@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Sidebar from "@/components/sideBar";
+import Sidebar from "@/components/TeacherSidebar";
 import Header from "@/components/Header";
 
 export default function TeacherCoursesPage() {
