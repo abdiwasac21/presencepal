@@ -15,7 +15,7 @@ const StudentLogin = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch('http://192.168.8.33:80/api/auth/student/login', {
+            const response = await fetch('http://localhost:80/api/auth/student/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
