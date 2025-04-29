@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import StudentSideBar from "@/components/StudentSideBar";
 import Header from "@/components/Header";
 
-const baseUrl = "http://localhost:80";
+const baseUrl = "http://192.168.8.33:80";
 
 const StudentDashboard = () => {
   const [studentData, setStudentData] = useState(null);

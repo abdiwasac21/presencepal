@@ -5,6 +5,8 @@ import { BrowserMultiFormatReader } from '@zxing/library';
 import Sidebar from '@/components/StudentSideBar';
 import Header from '@/components/Header';
 
+const baseUrl = 'http://192.168.8.33:80';
+
 export default function StudentScanPage() {
   const [scanResult, setScanResult] = useState('');
   const [loading, setLoading] = useState(false);
@@ -12,6 +14,8 @@ export default function StudentScanPage() {
   const [successMsg, setSuccessMsg] = useState('');
   const videoRef = useRef(null);
   const router = useRouter();
+
+
 
   const codeReader = useMemo(() => new BrowserMultiFormatReader(), []);
 
@@ -66,7 +70,7 @@ const handleSendAttendance = async (sessionId) => {
       const token = localStorage.getItem('studentAuthToken');
       console.log('Token:', token);
   
-      const res = await fetch('http://localhost:80/student/scan', {
+      const res = await fetch(`http://${baseUrl}/student/scan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

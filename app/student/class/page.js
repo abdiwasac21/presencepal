@@ -12,7 +12,7 @@ const StudentClassPage = () => {
       try {
         const token = localStorage.getItem("authToken");
         // Get student info (assuming backend provides /api/student/me)
-        const studentRes = await fetch("http://localhost:80/student/data", {
+        const studentRes = await fetch("http://192.168.8.33:80/student/data", {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const studentData = await studentRes.json();

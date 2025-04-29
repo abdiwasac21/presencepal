@@ -29,7 +29,7 @@ const StudentSideBar = () => {
                     {attendanceOpen && (
                         <div className="flex flex-col ml-6">
                             <Link
-                                href="/app/student/attendance/mark"
+                                href="/student/scan"
                                 className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700"
                             >
                                 Mark Attendance
