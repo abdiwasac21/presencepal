@@ -5,7 +5,7 @@ import { BrowserMultiFormatReader } from '@zxing/library';
 import Sidebar from '@/components/StudentSideBar';
 import Header from '@/components/Header';
 
-const baseUrl = 'http://192.168.8.33:80';
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
 
 export default function StudentScanPage() {
   const [scanResult, setScanResult] = useState('');
@@ -70,7 +70,7 @@ const handleSendAttendance = async (sessionId) => {
       const token = localStorage.getItem('studentAuthToken');
       console.log('Token:', token);
   
-      const res = await fetch(`http://${baseUrl}/student/scan`, {
+      const res = await fetch(`${baseUrl}/student/scan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

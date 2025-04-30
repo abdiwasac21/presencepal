@@ -7,6 +7,7 @@ import Sidebar from "@/components/sideBar";
 import Header from "@/components/Header";
 
 const DEFAULT_PASSWORD = "default_password";
+const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
 
 const CSVUpload = () => {
   const router = useRouter();
@@ -54,7 +55,7 @@ const CSVUpload = () => {
       console.log("Payload being sent:", JSON.stringify(payload, null, 2));
 
       // Send a POST request with an array of student objects.
-      const response = await fetch("http://localhost:80/teacher/student/register", {
+      const response = await fetch(`${baseUrl}/teacher/student/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Sidebar from "@/components/sideBar";
 import Header from "@/components/Header";
 
-const baseUrl = "http://localhost:80"; // Adjust this to your actual base URL
+const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
 
 const CoursesCreate = () => {
   const [creationType, setCreationType] = useState("single"); // "single" or "multiple"

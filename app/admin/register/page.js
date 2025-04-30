@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import  Sidebar  from '@/components/sideBar';
 import Header from '@/components/Header';
 
-const baseUrl = "http://localhost:80";
+const baseUrl = "https://presencepalbackend-1.onrender.com";
 
 const StudentRegister = () => {
   const [form, setForm] = useState({

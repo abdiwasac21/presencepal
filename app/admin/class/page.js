@@ -4,7 +4,7 @@ import Sidebar from "@/components/sideBar";
 import Header from "@/components/Header";
 import QRGenerator from "@/components/QRGenerator"; // Assuming you have a QRGenerator component
 
-const baseUrl = "http://localhost:80"; // Adjust this to your actual base URL
+const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
 
 
 const ClassPage = () => {
@@ -23,7 +23,7 @@ const ClassPage = () => {
 const fetchClasses = async () => {
   try {
     const token = localStorage.getItem("authToken");
-    const res = await fetch("http://localhost:80/teacher/classes", {
+    const res = await fetch(`${baseUrl}/teacher/classes`, {
       headers: { "Authorization": `Bearer ${token}` }
     });
     const text = await res.text();
@@ -47,7 +47,7 @@ const fetchClasses = async () => {
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      const res = await fetch("http://localhost:80/teacher/courses", {
+      const res = await fetch(`${baseUrl}/teacher/courses`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await res.json();
@@ -67,7 +67,7 @@ const fetchClasses = async () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("authToken");
-      const res = await fetch("http://localhost:80/teacher/create/class", {
+      const res = await fetch(`${baseUrl}/teacher/create/class`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

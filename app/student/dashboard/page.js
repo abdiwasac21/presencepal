@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import StudentSideBar from "@/components/StudentSideBar";
 import Header from "@/components/Header";
 
-const baseUrl = "http://192.168.8.33:80";
+const baseUrl = "https://presencepalbackend-1.onrender.com";
 
 const StudentDashboard = () => {
   const [studentData, setStudentData] = useState(null);

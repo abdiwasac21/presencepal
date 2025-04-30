@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/TeacherSidebar";
 import Header from "@/components/Header";
 
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
+
 export default function TeacherCoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,7 +27,7 @@ export default function TeacherCoursesPage() {
 
     async function fetchCourses() {
       try {
-        const res = await fetch(`http://localhost:80/api/teacher/courses/by-email/${teacherEmail}`, {
+        const res = await fetch(`${baseUrl}/api/teacher/courses/by-email/${teacherEmail}`, {
             headers: { Authorization: `Bearer ${token}` } 
           });
         if (!res.ok) throw new Error("Failed to fetch courses");

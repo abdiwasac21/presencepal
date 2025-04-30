@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
+
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +15,7 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:80/api/auth/teacher/signin', {
+      const response = await fetch(`${baseUrl}/api/auth/teacher/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

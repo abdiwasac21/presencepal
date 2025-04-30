@@ -5,6 +5,8 @@ import Sidebar from '@/components/sideBar';
 import Header from '@/components/Header';
 import { BrowserQRCodeSvgWriter } from '@zxing/library';
 
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
+
 export default function TeacherStartSessionPage() {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState('');
@@ -20,7 +22,7 @@ export default function TeacherStartSessionPage() {
       try {
         const token = localStorage.getItem('authToken');
         const email = localStorage.getItem('email');
-        const res = await fetch(`http://localhost:80/api/teacher/courses/by-email/${email}`, {
+        const res = await fetch(`${baseUrl}/api/teacher/courses/by-email/${email}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();

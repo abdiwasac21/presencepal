@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SideBar from '@/components/sideBar';
 
+const baseUrl = 'https://presencepalbackend-1.onrender.com'; // Adjust this to your actual base URL
+
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,7 +16,7 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:80/api/auth/signin/email', {
+      const response = await fetch(`${baseUrl}/api/auth/signin/email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Sidebar from '@/components/sideBar';
 import Header from '@/components/Header';
 
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
+
 const TeacherDashboard = () => {
     const router = useRouter();
     const [user, setUser] = useState(null);
@@ -25,7 +27,7 @@ const TeacherDashboard = () => {
     const fetchCourses = async (email) => {
         try {
             const token = localStorage.getItem('authToken');
-            const response = await fetch(`http://localhost:80/api/teacher/courses?email=${email}`, {
+            const response = await fetch(`${baseUrl}/api/teacher/courses?email=${email}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
