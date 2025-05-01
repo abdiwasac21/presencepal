@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import  Sidebar  from '@/components/sideBar';
 import Header from '@/components/Header';
 
-const baseUrl = "https://presencepalbackend-1.onrender.com";
+const baseUrl = "http://localhost:80"; // Adjust this to your actual base URL
 
 const StudentRegister = () => {
   const [form, setForm] = useState({
@@ -21,7 +21,7 @@ const StudentRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem("authToken");
+      const token = localStorage.getItem("adminAuthToken");
       const response = await fetch(`${baseUrl}/teacher/student/register`, {
         method: 'POST',
         headers: { 

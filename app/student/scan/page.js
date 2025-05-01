@@ -5,7 +5,8 @@ import { BrowserMultiFormatReader } from '@zxing/library';
 import Sidebar from '@/components/StudentSideBar';
 import Header from '@/components/Header';
 
-const baseUrl = 'https://presencepalbackend-1.onrender.com';
+const baseUrl = "https://presencepalbackend-1.onrender.com";
+
 
 export default function StudentScanPage() {
   const [scanResult, setScanResult] = useState('');

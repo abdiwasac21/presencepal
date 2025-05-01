@@ -1,5 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Header from "@/components/Header";
+import StudentSideBar from "@/components/StudentSideBar";
+
+const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
 
 const StudentClassPage = () => {
   const [studentClass, setStudentClass] = useState(null);
@@ -10,9 +14,9 @@ const StudentClassPage = () => {
   useEffect(() => {
     const fetchStudentClass = async () => {
       try {
-        const token = localStorage.getItem("authToken");
-        // Get student info (assuming backend provides /api/student/me)
-        const studentRes = await fetch("http://192.168.8.33:80/student/data", {
+        const token = localStorage.getItem("studentAuthToken");
+        // Get student info
+        const studentRes = await fetch(`${baseUrl}/student/data`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const studentData = await studentRes.json();
@@ -62,23 +66,31 @@ const StudentClassPage = () => {
   }
 
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-white shadow rounded p-8">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">My Class</h1>
-      <div className="mb-6">
-        <span className="font-semibold text-lg">Class Name:</span>{" "}
-        <span className="text-gray-800">{studentClass.name}</span>
-      </div>
-      <div>
-        <span className="font-semibold text-lg">Courses:</span>
-        <ul className="list-disc ml-6 mt-2">
-          {courses.length > 0 ? (
-            courses.map(course => (
-              <li key={course.id} className="text-gray-800">{course.name}</li>
-            ))
-          ) : (
-            <li className="text-gray-400 italic">No courses assigned</li>
-          )}
-        </ul>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <Header title="PresencePal - Student Portal" />
+      <div className="flex flex-1">
+        <StudentSideBar />
+        <main className="flex-1 p-10">
+          <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-10">
+            <h2 className="text-2xl font-bold mb-6 text-blue-800">My Class</h2>
+            <div className="mb-4">
+              <span className="font-semibold text-lg">Class Name:</span>{" "}
+              <span className="text-gray-700">{studentClass.name}</span>
+            </div>
+            <div>
+              <span className="font-semibold text-lg">Courses:</span>
+              <ul className="list-disc ml-6 mt-2">
+                {courses.length > 0 ? (
+                  courses.map(course => (
+                    <li key={course.id} className="text-gray-800">{course.name}</li>
+                  ))
+                ) : (
+                  <li className="text-gray-400 italic">No courses assigned</li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );
