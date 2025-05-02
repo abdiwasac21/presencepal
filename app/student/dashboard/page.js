@@ -1,5 +1,4 @@
 "use client";
-import { Component } from "lucide-react";
 import { useEffect, useState } from "react";
 import StudentSideBar from "@/components/StudentSideBar";
 import Header from "@/components/Header";
@@ -8,6 +7,8 @@ const baseUrl = "https://presencepalbackend-1.onrender.com";
 
 const StudentDashboard = () => {
   const [studentData, setStudentData] = useState(null);
+  const [currentSemester, setCurrentSemester] = useState(null);
+  const [semesterList, setSemesterList] = useState([]);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isStudentLoggedIn");
@@ -19,8 +20,6 @@ const StudentDashboard = () => {
     const fetchStudentData = async () => {
       try {
         const authToken = localStorage.getItem("studentAuthToken");
-        console.log("Auth Token:", authToken); // Log the token to make sure it's correct
-        
         if (!authToken) {
           console.error("No authToken found in localStorage");
           return;
@@ -30,15 +29,12 @@ const StudentDashboard = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${authToken}`, // Send the token in the Authorization header
+            "Authorization": `Bearer ${authToken}`,
           },
         });
 
-        console.log("Response status:", response.status); // Log the response status
-        
         if (response.ok) {
           const data = await response.json();
-          console.log("Data received:", data); // Log the data
           setStudentData(data);
         } else {
           const errorText = await response.text();
@@ -52,11 +48,23 @@ const StudentDashboard = () => {
     fetchStudentData();
   }, []);
 
+  useEffect(() => {
+    if (studentData?.class?.courses) {
+      const semesters = Array.from(
+        new Set(studentData.class.courses.map((c) => c.semester))
+      ).sort((a, b) => a - b);
+      setSemesterList(semesters);
+      if (semesters.length > 0 && currentSemester === null) {
+        setCurrentSemester(semesters[0]);
+      }
+    }
+  }, [studentData]);
+
   const handleLogout = () => {
     localStorage.removeItem("isStudentLoggedIn");
     localStorage.removeItem("studentAuthToken");
     window.location.href = "/student/login";
-  }
+  };
 
   return (
     <div className="flex">
@@ -76,7 +84,6 @@ const StudentDashboard = () => {
                     </svg>
                     Attendance
                   </h2>
-                  {/* Example attendance data, replace with real data if available */}
                   <div className="flex items-center gap-4 mb-2">
                     <span className="text-3xl font-bold text-blue-600">
                       {studentData.attendance?.percentage ?? "N/A"}%
@@ -114,31 +121,55 @@ const StudentDashboard = () => {
               {/* Courses Section */}
               <div className="mt-8">
                 <h2 className="text-xl font-semibold mb-4">Courses</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {studentData.class?.courses && studentData.class.courses.length > 0 ? (
-                    studentData.class.courses.map(course => (
-                      <div
-                        key={course._id}
-                        className="bg-white rounded-xl shadow hover:shadow-lg transition p-5 flex flex-col gap-2 border-l-4 border-blue-500"
-                      >
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m0 0H6m6 0h6" />
-                            </svg>
-                          </div>
-                          <div>
-                            <div className="font-bold">{course.name}</div>
-                            <div className="text-xs text-gray-500">{course.code}</div>
-                          </div>
-                        </div>
-                        <div className="text-gray-600 text-sm">{course.description || "No description available."}</div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-gray-400 italic">No courses assigned</div>
-                  )}
+                {/* Semester Pagination */}
+                <div className="flex gap-2 mb-6 flex-wrap">
+                  {semesterList.map((semester) => (
+                    <button
+                      key={semester}
+                      className={`px-4 py-2 rounded-md border ${
+                        currentSemester === semester
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "bg-white text-blue-600 border-blue-300"
+                      } transition`}
+                      onClick={() => setCurrentSemester(semester)}
+                    >
+                      Semester {semester}
+                    </button>
+                  ))}
                 </div>
+                {/* Courses for current semester */}
+                {studentData.class?.courses && studentData.class.courses.length > 0 ? (
+                  <div>
+                    <h3 className="text-lg font-bold mb-3 text-blue-700">
+                      Semester {currentSemester}
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                      {studentData.class.courses
+                        .filter((course) => course.semester === currentSemester)
+                        .map((course) => (
+                          <div
+                            key={course._id}
+                            className="bg-white rounded-xl shadow hover:shadow-lg transition p-5 flex flex-col gap-2 border-l-4 border-blue-500"
+                          >
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m0 0H6m6 0h6" />
+                                </svg>
+                              </div>
+                              <div>
+                                <div className="font-bold">{course.name}</div>
+                                <div className="text-xs text-gray-500">{course.code}</div>
+                              </div>
+                            </div>
+                            <div className="text-gray-600 text-sm">{course.description || "No description available."}</div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-400 italic">No courses assigned</div>
+                )}
               </div>
               <button
                 onClick={handleLogout}
@@ -146,16 +177,13 @@ const StudentDashboard = () => {
               >
                 Logout
               </button>
-            
             </>
           ) : (
             <p>Loading...</p>
           )}
         </div>
       </div>
-
     </div>
-      
   );
 };
 
