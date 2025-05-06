@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import Sidebar from '@/components/sideBar';
+import Sidebar from '@/components/TeacherSidebar';
 import Header from '@/components/Header';
 
 const baseUrl = 'https://presencepalbackend-1.onrender.com';
@@ -15,23 +15,34 @@ const TeacherDashboard = () => {
     useEffect(() => {
         const loggedIn = localStorage.getItem('loggedIn');
         const email = localStorage.getItem('email');
+        const token = localStorage.getItem('authToken');
+        if (!loggedIn || !token) {
+            router.push('/teacher/login');
+            return;
+        }
+
         if (loggedIn && email) {
             setUser({ email });
-            // Fetch courses for this teacher
-            fetchCourses(email);
+            fetchCourses(email, token);
         } else {
             router.push('/teacher/login');
         }
     }, [router]);
 
-    const fetchCourses = async (email) => {
+    const fetchCourses = async (email, token) => {
         try {
-            const token = localStorage.getItem('authToken');
-            const response = await fetch(`${baseUrl}/api/teacher/courses?email=${email}`, {
+            const response = await fetch(`${baseUrl}/api/teacher/courses/by-email/${email}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
+            if (response.status === 401) {
+                localStorage.removeItem('loggedIn');
+                localStorage.removeItem('email');
+                localStorage.removeItem('authToken');
+                router.push('/teacher/login');
+                return;
+            }
             if (response.ok) {
                 const data = await response.json();
                 setCourses(data.data || []);
@@ -68,17 +79,26 @@ const TeacherDashboard = () => {
                                 Logout
                             </button>
                             <div>
-                                <h2 className="text-xl font-semibold mb-2">Your Courses</h2>
+                                <h2 className="text-xl font-semibold mb-4">Your Courses</h2>
                                 {loading ? (
                                     <p>Loading courses...</p>
                                 ) : courses.length > 0 ? (
-                                    <ul className="list-disc pl-5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                                         {courses.map((course) => (
-                                            <li key={course.id || course._id} className="mb-1">
-                                                {course.name}
-                                            </li>
+                                            <div
+                                                key={course.id || course._id}
+                                                className="bg-white shadow-md rounded-lg p-6 flex flex-col justify-between hover:shadow-xl transition-shadow"
+                                            >
+                                                <h3 className="text-lg font-bold mb-2 text-blue-700">{course.name}</h3>
+                                                <p className="text-gray-600 mb-4">{course.description || "No description available."}</p>
+                                                <div className="mt-auto">
+                                                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                                        {course.code || "No Code"}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         ))}
-                                    </ul>
+                                    </div>
                                 ) : (
                                     <p>No courses found.</p>
                                 )}

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import SideBar from '@/components/sideBar';
 
-const baseUrl = 'https://presencepalbackend-1.onrender.com'; // Adjust this to your actual base URL
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');

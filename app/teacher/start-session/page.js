@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/sideBar';
+import Sidebar from '@/components/TeacherSidebar';
 import Header from '@/components/Header';
 import { BrowserQRCodeSvgWriter } from '@zxing/library';
 
@@ -58,7 +58,7 @@ export default function TeacherStartSessionPage() {
       const { latitude, longitude } = position.coords;
 
       const token = localStorage.getItem('authToken');
-      const res = await fetch('http://localhost:80/api/teacher/start-session', {
+      const res = await fetch(`${baseUrl}/api/teacher/start-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
