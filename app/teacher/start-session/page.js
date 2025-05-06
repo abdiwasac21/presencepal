@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/sideBar';
+import Sidebar from '@/components/TeacherSidebar';
 import Header from '@/components/Header';
 import { BrowserQRCodeSvgWriter } from '@zxing/library';
 
