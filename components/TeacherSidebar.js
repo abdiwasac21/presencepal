@@ -18,7 +18,7 @@ const Sidebar = () => {
                 <Link href="/teacher/dashboard" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                     <Home className="w-5 h-5" /> Dashboard
                 </Link>
-                <Link href="/teacher/course" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
+                <Link href="/teacher/courses" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                     <Settings className="w-5 h-5" /> Course
                 </Link>
                 <Link href="/teacher/class" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
@@ -39,7 +39,7 @@ const Sidebar = () => {
                             <Link href="/teacher/start-session" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700 text-sm">
                                 <CheckSquare className="w-4 h-4" /> Start Session
                             </Link>
-                            <Link href="/teacher/attendance/classrooms" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700 text-sm">
+                            <Link href="/teacher/view-sessions" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700 text-sm">
                                 <Users className="w-4 h-4" /> See All Classrooms
                             </Link>
                         </div>

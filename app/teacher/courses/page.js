@@ -65,13 +65,7 @@ export default function TeacherCoursesPage() {
                   <strong>Teacher:</strong> {course.teacher?.username} ({course.teacher?.email})
                 </p>
                 <h3 className="font-bold mb-1">Enrolled Students:</h3>
-                <ul className="list-disc list-inside">
-                  {course.students.map((student) => (
-                    <li key={student._id}>
-                      {student.name} ({student.email})
-                    </li>
-                  ))}
-                </ul>
+                <p className="mb-2">{course.className || "No class"} </p>
               </div>
             ))
           )}
