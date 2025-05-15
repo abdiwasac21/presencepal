@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/TeacherSidebar";
 import Header from "@/components/Header";
 
-const baseUrl = 'https://presencepalbackend-1.onrender.com';
+const baseUrl = 'http://localhost:80';
 
 export default function TeacherSessionsStartedPage() {
   const [sessions, setSessions] = useState([]);
@@ -51,9 +51,14 @@ export default function TeacherSessionsStartedPage() {
                 <p className="mb-2">
                   <strong>Course Code:</strong> {session.courseCode || "N/A"}
                 </p>
-                <p className="mb-2">
-                  <strong>Students Attended:</strong> {session.studentIds?.length || 0}
-                </p>
+                  <div className="mb-2">
+                    <strong>Student Names:</strong>
+                    <ul className="list-disc list-inside">
+                      {(session.students || []).map((student) => (
+                  <li key={student.studentId}>{student.name}</li>
+                     ))}
+                    </ul>
+                    </div>
               </div>
             ))
           )}

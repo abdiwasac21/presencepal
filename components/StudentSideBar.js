@@ -35,7 +35,7 @@ const StudentSideBar = () => {
                                 Mark Attendance
                             </Link>
                             <Link
-                                href="/app/student/attendance/view"
+                                href="/student/view-attendance"
                                 className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700"
                             >
                                 View Attendance
