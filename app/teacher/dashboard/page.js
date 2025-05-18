@@ -11,6 +11,7 @@ const TeacherDashboard = () => {
     const [user, setUser] = useState(null);
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [search, setSearch] = useState(""); // <-- Fix: use string
 
     useEffect(() => {
         const loggedIn = localStorage.getItem('loggedIn');
@@ -62,11 +63,20 @@ const TeacherDashboard = () => {
         router.push('/teacher/login');
     };
 
+    // Filter courses based on search input
+    const filteredCourses = courses.filter(course =>
+        course.name?.toLowerCase().includes(search.toLowerCase())
+    );
+
     return (
         <div className="flex">
             <Sidebar />
             <div className="flex-1">
-                <Header title="Teacher Dashboard" />
+                <Header 
+                    title="Teacher Dashboard"
+                    searchValue={search}
+                    onSearchChange={e => setSearch(e.target.value)}
+                />
                 <div className="p-8 bg-gray-50 min-h-screen">
                     <h1 className="text-3xl font-bold mb-4">Teacher Dashboard</h1>
                     {user ? (
@@ -82,9 +92,9 @@ const TeacherDashboard = () => {
                                 <h2 className="text-xl font-semibold mb-4">Your Courses</h2>
                                 {loading ? (
                                     <p>Loading courses...</p>
-                                ) : courses.length > 0 ? (
+                                ) : filteredCourses.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                        {courses.map((course) => (
+                                        {filteredCourses.map((course) => (
                                             <div
                                                 key={course.id || course._id}
                                                 className="bg-white shadow-md rounded-lg p-6 flex flex-col justify-between hover:shadow-xl transition-shadow"

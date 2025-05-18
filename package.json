@@ -11,11 +11,13 @@
   "dependencies": {
     "@shadcn/ui": "^0.0.4",
     "@zxing/library": "^0.21.3",
+    "chart.js": "^4.4.9",
     "lucide-react": "^0.483.0",
     "next": "15.2.2",
     "papaparse": "^5.5.2",
     "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {

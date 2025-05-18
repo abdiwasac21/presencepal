@@ -1,7 +1,6 @@
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import SideBar from '@/components/sideBar';
 
 const baseUrl = 'https://presencepalbackend-1.onrender.com';
 
@@ -33,7 +32,7 @@ const LoginForm = () => {
         localStorage.setItem('email', email);
 
         // Redirect to the teacher dashboard.
-        router.push('/teacher/dashboard');
+        router.push('/admin/dashboard');
       } else {
         alert('Invalid credentials');
       }
