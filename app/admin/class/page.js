@@ -2,10 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from "@/components/sideBar";
 import Header from "@/components/Header";
-import QRGenerator from "@/components/QRGenerator"; // Assuming you have a QRGenerator component
+import { ChevronDown, ChevronUp } from "lucide-react";
 
-const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
-
+const baseUrl = "https://presencepalbackend-1.onrender.com";
 
 const ClassPage = () => {
   const [className, setClassName] = useState("");
@@ -14,35 +13,34 @@ const ClassPage = () => {
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [courseMap, setCourseMap] = useState({});
+  const [openCourses, setOpenCourses] = useState({}); // Track which class cards are open
 
   useEffect(() => {
     fetchClasses();
     fetchCourses();
   }, []);
 
-const fetchClasses = async () => {
-  try {
-    const token = localStorage.getItem("authToken");
-    const res = await fetch(`${baseUrl}/teacher/classes`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    const text = await res.text();
-    let data;
+  const fetchClasses = async () => {
     try {
-      data = JSON.parse(text);
-    } catch (parseErr) {
-      setMessage("Invalid server response");
-      setClasses([]); // Ensure classes is always an array
-      return;
+      const token = localStorage.getItem("authToken");
+      const res = await fetch(`${baseUrl}/teacher/classes`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseErr) {
+        setMessage("Invalid server response");
+        setClasses([]);
+        return;
+      }
+      setClasses(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setMessage("Failed to fetch classes");
+      setClasses([]);
     }
-    setClasses(Array.isArray(data) ? data : []); // Always set as array
-  } catch (err) {
-    setMessage("Failed to fetch classes");
-    setClasses([]); // Always set as array
-  }
-};
-// ...existing code...
-
+  };
 
   const fetchCourses = async () => {
     try {
@@ -51,7 +49,6 @@ const fetchClasses = async () => {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await res.json();
-      // data should be an array of courses
       const map = {};
       (Array.isArray(data) ? data : (data.courses || [])).forEach(course => {
         map[course._id] = course.name;
@@ -62,7 +59,6 @@ const fetchClasses = async () => {
     }
   };
 
-  // Create a new class
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -84,9 +80,6 @@ const fetchClasses = async () => {
     }
   };
 
-  // ...rest of your code remains unchanged...
-
-  // Delete a class
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this class?")) return;
     try {
@@ -102,13 +95,11 @@ const fetchClasses = async () => {
     }
   };
 
-  // Start editing a class
   const startEdit = (id, name) => {
     setEditingId(id);
     setEditName(name);
   };
 
-  // Save class name update
   const handleUpdate = async (id) => {
     try {
       const token = localStorage.getItem("authToken");
@@ -129,90 +120,114 @@ const fetchClasses = async () => {
     }
   };
 
-    // ...existing code...
-    return (
-      <div className="min-h-screen flex">
-        <Sidebar />
-        <div className="flex-1 p-6">
-          <Header title="Manage Classes" />
-          <div className="max-w-2xl mx-auto bg-white p-8 shadow rounded mb-8">
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">
-                  Class Name:
-                </label>
-                <input 
-                  type="text"
-                  value={className}
-                  onChange={(e) => setClassName(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                  placeholder="Enter new class name"
-                />
-              </div>
-              <div className="text-center">
-                <button 
-                  type="submit"
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
-                >
-                  Create Class
-                </button>
-              </div>
-            </form>
-            {message && <p className="mt-4 text-center text-sm text-gray-700">{message}</p>}
-          </div>
-  
-          <div className="max-w-3xl mx-auto bg-white p-8 shadow rounded">
-            <h2 className="text-2xl font-bold mb-4 text-blue-700">All Classes</h2>
-            {classes.length === 0 && <p className="text-gray-500">No classes found.</p>}
-            <ul className="space-y-6">
-              {classes.map(cls => (
-                <li key={cls._id} className="border-b pb-4">
-                  <div className="flex items-center justify-between">
-                    {editingId === cls._id ? (
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={e => setEditName(e.target.value)}
-                          className="px-2 py-1 border rounded"
-                        />
-                        <button
-                          onClick={() => handleUpdate(cls._id)}
-                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingId(null)}
-                          className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <span className="font-semibold text-lg">{cls.name}</span>
-                        <div className="space-x-2">
-                          <button
-                            onClick={() => startEdit(cls._id, cls.name)}
-                            className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(cls._id)}
-                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </>
-                    )}
+  // Toggle open/close for courses in a class card
+  const toggleCourses = (id) => {
+    setOpenCourses(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  return (
+    <div className="min-h-screen flex bg-gradient-to-br from-indigo-50 to-blue-100">
+      <Sidebar />
+      <div className="flex-1 p-0 md:p-10 flex flex-col">
+        <Header title="Manage Classes" />
+        <div className="max-w-2xl mx-auto bg-white p-8 shadow-2xl rounded-2xl mb-10 mt-8">
+          <form onSubmit={handleSubmit}>
+            <div className="mb-6">
+              <label className="block text-blue-700 text-lg font-semibold mb-2">
+                Class Name
+              </label>
+              <input 
+                type="text"
+                value={className}
+                onChange={(e) => setClassName(e.target.value)}
+                required
+                className="w-full px-4 py-3 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-base bg-blue-50"
+                placeholder="Enter new class name"
+              />
+            </div>
+            <div className="text-center">
+              <button 
+                type="submit"
+                className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white font-bold py-3 px-10 rounded-xl shadow-lg text-lg transition"
+              >
+                Create Class
+              </button>
+            </div>
+          </form>
+          {message && <p className="mt-6 text-center text-base font-semibold text-blue-600">{message}</p>}
+        </div>
+
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-extrabold mb-8 text-blue-700 tracking-tight">All Classes</h2>
+          {classes.length === 0 && <p className="text-gray-500">No classes found.</p>}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {classes.map(cls => (
+              <div key={cls._id} className="bg-white rounded-xl shadow-lg p-5 flex flex-col border border-blue-100">
+                {editingId === cls._id ? (
+                  <div className="flex flex-col gap-4">
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={e => setEditName(e.target.value)}
+                      className="px-3 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleUpdate(cls._id)}
+                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingId(null)}
+                        className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-semibold transition"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                  <div className="mt-2 ml-2">
+                ) : (
+                  <>
+                    <span className="font-semibold text-lg text-blue-800 mb-2">{cls.name}</span>
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() => startEdit(cls._id, cls.name)}
+                        className="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg font-semibold transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(cls._id)}
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
+                <button
+                  className="flex items-center gap-2 mt-4 text-blue-600 hover:text-blue-800 transition text-sm font-medium focus:outline-none"
+                  onClick={() => toggleCourses(cls._id)}
+                >
+                  {openCourses[cls._id] ? (
+                    <>
+                      <ChevronUp className="w-4 h-4" />
+                      Hide Courses
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4" />
+                      Show Courses
+                    </>
+                  )}
+                </button>
+                {openCourses[cls._id] && (
+                  <div className="mt-3">
                     <span className="font-medium text-gray-700">Courses:</span>
-                    <ul className="list-disc ml-6">
+                    <ul className="list-disc ml-6 mt-1">
                       {(cls.courses && cls.courses.length > 0) ? (
                         cls.courses.map(courseId => (
                           <li key={courseId} className="text-gray-800">
@@ -224,21 +239,14 @@ const fetchClasses = async () => {
                       )}
                     </ul>
                   </div>
-                  {/* QRGenerator for this class */}
-                  <div className="mt-4">
-                    <QRGenerator
-                      classId={cls._id}
-                      courseId={cls.courses && cls.courses.length > 0 ? cls.courses[0] : null}
-                    />
-                  </div>
-                </li>
-              ))}
-            </ul>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    );
-  // ...existing code...
+    </div>
+  );
 };
 
 export default ClassPage;

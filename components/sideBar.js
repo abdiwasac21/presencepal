@@ -17,7 +17,7 @@ const Sidebar = () => {
                     <Home className="w-5 h-5" /> Dashboard
                 </Link>
                 <Link href="/admin/register" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
-                    <Users className="w-5 h-5" /> Students
+                    <Users className="w-5 h-5" /> Register
                 </Link>
                 <Link href="/admin/course" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                     <Settings className="w-5 h-5" /> Course
