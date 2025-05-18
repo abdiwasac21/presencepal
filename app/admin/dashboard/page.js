@@ -19,7 +19,7 @@ import {
 
 Chart.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
 
-const baseUrl = 'http://localhost:80';
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
 
 const attendanceData = {
   labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
