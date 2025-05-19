@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Sidebar from '@/components/TeacherSidebar';
 import Header from '@/components/Header';
 
-const baseUrl = 'http://localhost:80';
+// const baseUrl = 'http://localhost:80';
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
 
 const TeacherDashboard = () => {
     const router = useRouter();
