@@ -45,43 +45,51 @@ export default function TeacherStartSessionPage() {
     }
   }, [sessionId]);
 
-  const handleStartSession = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMsg('');
-    setSessionId('');
-    try {
-      // Get geolocation
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
-      const { latitude, longitude } = position.coords;
+const handleStartSession = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setErrorMsg('');
+  setSessionId('');
+  try {
+    // Get geolocation
+    const position = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+    const { latitude, longitude } = position.coords;
 
-      const token = localStorage.getItem('authToken');
-      const res = await fetch(`${baseUrl}/api/teacher/start-session`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          courseId: selectedCourse,
-          location: { lat: latitude, lng: longitude },
-          durationMinutes: 30,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok && data.sessionId) {
-        setSessionId(data.sessionId);
-      } else {
-        setErrorMsg(data.message || 'Failed to start session.');
-      }
-    } catch (err) {
-      setErrorMsg('Failed to start session or get location.');
-    } finally {
-      setLoading(false);
+    const token = localStorage.getItem('authToken');
+    const res = await fetch(`${baseUrl}/api/teacher/start-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        courseId: selectedCourse,
+        location: { lat: latitude, lng: longitude }, // <-- use lat/lng
+        durationMinutes: 30,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok && data.sessionId) {
+      setSessionId(data.sessionId);
+    } else {
+      setErrorMsg(data.message || 'Failed to start session.');
     }
-  };
+  } catch (err) {
+    if (err.code === 1) {
+      setErrorMsg('Location permission denied. Please allow location access.');
+    } else if (err.code === 2) {
+      setErrorMsg('Location unavailable. Please check your device settings.');
+    } else if (err.code === 3) {
+      setErrorMsg('Location request timed out. Try again.');
+    } else {
+      setErrorMsg('Failed to start session or get location.');
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex bg-gray-100">
