@@ -4,7 +4,7 @@ import Sidebar from '@/components/sideBar';
 import Header from '@/components/Header';
 
 const baseUrl = 'https://presencepalbackend-1.onrender.com';
-// const baseUrl = 'http://localhost:80';
+// const baseUrl = 'http://localhost:80'; for testing locally 
 
 const StudentTeacherRegister = () => {
   const [role, setRole] = useState('student'); // 'student' or 'teacher'
