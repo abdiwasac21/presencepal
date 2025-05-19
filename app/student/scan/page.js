@@ -5,8 +5,8 @@ import { BrowserMultiFormatReader } from '@zxing/library';
 import Sidebar from '@/components/StudentSideBar';
 import Header from '@/components/Header';
 
-const baseUrl = "https://presencepalbackend-1.onrender.com";
-
+// const baseUrl = "https://presencepalbackend-1.onrender.com";
+const baseUrl = "http://localhost:80";
 
 export default function StudentScanPage() {
   const [scanResult, setScanResult] = useState('');
@@ -16,23 +16,32 @@ export default function StudentScanPage() {
   const videoRef = useRef(null);
   const router = useRouter();
 
-
-
   const codeReader = useMemo(() => new BrowserMultiFormatReader(), []);
 
   useEffect(() => {
     const token = localStorage.getItem('studentAuthToken');
     if (!token) {  
-        router.push('/student/login');
-        return;
-        }
+      router.push('/student/login');
+      return;
+    }
     let active = true;
     if (videoRef.current) {
       codeReader.decodeFromVideoDevice(null, videoRef.current, (result, error) => {
         if (!active) return;
         if (result) {
-          setScanResult(result.getText());
-          handleSendAttendance(result.getText());
+          try {
+            // Expect QR code to contain JSON: { sessionId, courseId }
+            const qrData = JSON.parse(result.getText());
+            if (!qrData.sessionId || !qrData.courseId) {
+              setErrorMsg('QR code missing session or course ID.');
+              codeReader.reset();
+              return;
+            }
+            setScanResult(`Session: ${qrData.sessionId}, Course: ${qrData.courseId}`);
+            handleSendAttendance(qrData.sessionId, qrData.courseId);
+          } catch (e) {
+            setErrorMsg('Invalid QR code format.');
+          }
           codeReader.reset();
         }
         if (error && !(error instanceof Error)) {
@@ -49,8 +58,7 @@ export default function StudentScanPage() {
     // eslint-disable-next-line
   }, [codeReader]);
 
-
-const handleSendAttendance = async (sessionId) => {
+  const handleSendAttendance = async (sessionId, courseId) => {
     setLoading(true);
     setErrorMsg('');
     setSuccessMsg('');
@@ -60,8 +68,8 @@ const handleSendAttendance = async (sessionId) => {
         navigator.geolocation.getCurrentPosition(resolve, reject);
       });
       const { latitude, longitude } = position.coords;
-  
-      // Get deviceToken (adjust the key if you use a different one)
+
+      // Get deviceToken
       const deviceToken = localStorage.getItem('deviceToken');
       if (!deviceToken) {
         setErrorMsg('Device token not found. Please log in again.');
@@ -69,8 +77,7 @@ const handleSendAttendance = async (sessionId) => {
         return;
       }
       const token = localStorage.getItem('studentAuthToken');
-      console.log('Token:', token);
-  
+
       const res = await fetch(`${baseUrl}/student/scan`, {
         method: 'POST',
         headers: {
@@ -79,6 +86,7 @@ const handleSendAttendance = async (sessionId) => {
         },
         body: JSON.stringify({
           sessionId,
+          courseId,
           location: { lat: latitude, lng: longitude },
           deviceToken,
         }),
@@ -96,7 +104,6 @@ const handleSendAttendance = async (sessionId) => {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen flex bg-gray-100">
@@ -125,9 +132,11 @@ const handleSendAttendance = async (sessionId) => {
             )}
             {scanResult && (
               <div className="text-center">
-                <p className="text-xl font-semibold text-green-700">Session ID Scanned:</p>
+                <p className="text-xl font-semibold text-green-700">QR Data Scanned:</p>
                 <p className="break-all text-gray-800">{scanResult}</p>
-                <p className="text-center mt-4 text-blue-600">Submitting attendance...</p>
+                {loading ? (
+                  <p className="text-center mt-4 text-blue-600">Submitting attendance...</p>
+                ) : null}
               </div>
             )}
           </div>
