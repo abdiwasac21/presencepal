@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import Sidebar from '@/components/TeacherSidebar';
 import Header from '@/components/Header';
 
-// const baseUrl = 'http://localhost:80';
 const baseUrl = 'https://presencepalbackend-1.onrender.com';
+// const baseUrl = 'http://localhost:80';
 
 const TeacherDashboard = () => {
     const router = useRouter();
@@ -14,71 +14,106 @@ const TeacherDashboard = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
-    const [today, setToday] = useState(""); // For client-only date
+    const [today, setToday] = useState("");
+    const [activeTab, setActiveTab] = useState('courses');
+    const [stats, setStats] = useState({
+        attendanceRate: 0,
+        upcomingSessions: 0,
+        pendingTasks: 0
+    });
+    const [recentSessions, setRecentSessions] = useState([]);
 
     useEffect(() => {
-        setToday(new Date().toLocaleDateString());
+        setToday(new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        }));
     }, []);
 
     useEffect(() => {
         const loggedIn = localStorage.getItem('loggedIn');
         const email = localStorage.getItem('email');
         const token = localStorage.getItem('authToken');
+        
         if (!loggedIn || !token) {
             router.push('/teacher/login');
             return;
         }
+        
         if (loggedIn && email) {
             setUser({ email });
-            fetchCourses(email, token);
-            fetchStudents(token);
+            fetchTeacherData(email, token);
+            fetchRecentSessions(token);
         } else {
             router.push('/teacher/login');
         }
     }, [router]);
 
-    const fetchCourses = async (email, token) => {
+    const fetchTeacherData = async (email, token) => {
         try {
-            const response = await fetch(`${baseUrl}/api/teacher/courses/by-email/${email}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            if (response.status === 401) {
-                localStorage.removeItem('loggedIn');
-                localStorage.removeItem('email');
-                localStorage.removeItem('authToken');
-                router.push('/teacher/login');
+            setLoading(true);
+            const [coursesRes, studentsRes, statsRes] = await Promise.all([
+                fetch(`${baseUrl}/api/teacher/courses/by-email/${email}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                fetch(`${baseUrl}/api/teacher/all-my-students`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                fetch(`${baseUrl}/api/teacher/stats`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+            ]);
+
+            // Handle unauthorized responses
+            if ([coursesRes, studentsRes, statsRes].some(res => res.status === 401)) {
+                handleLogout();
                 return;
             }
-            if (response.ok) {
-                const data = await response.json();
-                setCourses(data.data || []);
-            } else {
-                setCourses([]);
-            }
+
+            // Process responses
+            const coursesData = await coursesRes.json();
+            const studentsData = await studentsRes.json();
+            const statsData = statsRes.ok ? await statsRes.json() : {};
+
+            setCourses(coursesData.data || []);
+            setStudents(studentsData.data || []);
+            setStats({
+                attendanceRate: statsData.attendanceRate || 0,
+                upcomingSessions: statsData.upcomingSessions || 0,
+                pendingTasks: statsData.pendingTasks || 0
+            });
         } catch (error) {
-            setCourses([]);
+            console.error("Error fetching data:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchStudents = async (token) => {
+    // Fetch recent sessions from /api/teacher/session-started
+    const fetchRecentSessions = async (token) => {
         try {
-            const response = await fetch(`${baseUrl}/api/teacher/all-my-students`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const res = await fetch(`${baseUrl}/api/teacher/session-started`, {
+                headers: { Authorization: `Bearer ${token}` }
             });
-            if (response.ok) {
-                const data = await response.json();
-                setStudents(data.data || []);
-            } else {
-                setStudents([]);
+            if (res.status === 401) {
+                handleLogout();
+                return;
             }
+            const data = await res.json();
+            // Flatten all sessions from all courses, add course info, and sort by date desc
+            const allSessions = (data.courses || []).flatMap(course =>
+                (course.sessions || []).map(session => ({
+                    ...session,
+                    courseName: course.courseName,
+                    courseCode: course.courseCode
+                }))
+            );
+            allSessions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setRecentSessions(allSessions.slice(0, 5));
         } catch (error) {
-            setStudents([]);
+            setRecentSessions([]);
         }
     };
 
@@ -89,149 +124,251 @@ const TeacherDashboard = () => {
         router.push('/teacher/login');
     };
 
-    // Dashboard summary logic
+    // Dashboard data
     const totalCourses = courses.length;
     const totalStudents = students.length;
-
-    // Recent courses (last 3)
-    const recentCourses = [...courses].reverse().slice(0, 3);
-
-    // Filter courses based on search input
+    const recentCourses = [...courses].slice(-3).reverse();
     const filteredCourses = courses.filter(course =>
-        course.name?.toLowerCase().includes(search.toLowerCase())
+        course.name?.toLowerCase().includes(search.toLowerCase()) ||
+        course.code?.toLowerCase().includes(search.toLowerCase())
     );
+    const recentStudents = [...students].slice(-5).reverse();
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+        <div className="flex h-screen bg-gray-50">
             <Sidebar />
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 overflow-y-auto">
                 <Header 
                     title="Teacher Dashboard"
                     searchValue={search}
                     onSearchChange={e => setSearch(e.target.value)}
+                    showSearch={activeTab === 'courses'}
                 />
-                <main className="flex-1 p-8">
-                    <div className="max-w-5xl mx-auto">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-                            <div>
-                                <h1 className="text-3xl font-extrabold text-blue-800 mb-2">
-                                    Welcome{user ? `, ${user.email}` : ""}!
-                                </h1>
-                                <p className="text-gray-500">Manage your courses and sessions easily.</p>
-                            </div>
-                            <button
-                                onClick={handleLogout}
-                                className="mt-4 md:mt-0 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold shadow transition"
-                            >
-                                Logout
-                            </button>
+                
+                <main className="p-6">
+                    {/* Welcome Section */}
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-800">
+                                Welcome back, {user?.email?.split('@')[0] || 'Professor'}!
+                            </h1>
+                            <p className="text-gray-600">{today}</p>
                         </div>
-
-                        {/* Dashboard summary */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-                            <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border border-blue-100">
-                                <span className="text-3xl text-blue-600 mb-2">📚</span>
-                                <span className="text-2xl font-bold text-blue-800">{totalCourses}</span>
-                                <span className="text-gray-500 text-sm">Courses</span>
-                            </div>
-                            <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border border-blue-100">
-                                <span className="text-3xl text-green-600 mb-2">👨‍🎓</span>
-                                <span className="text-2xl font-bold text-green-700">{totalStudents}</span>
-                                <span className="text-gray-500 text-sm">Total Students</span>
-                            </div>
-                            <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border border-blue-100">
-                                <span className="text-3xl text-indigo-600 mb-2">🕒</span>
-                                <span className="text-2xl font-bold text-indigo-700">{today}</span>
-                                <span className="text-gray-500 text-sm">Today</span>
-                            </div>
-                        </div>
-
-                        {/* Recent courses */}
-                        <div className="mb-10">
-                            <h2 className="text-xl font-bold text-blue-700 mb-4">Recent Courses</h2>
-                            {recentCourses.length === 0 ? (
-                                <div className="text-gray-400 italic">No recent courses.</div>
-                            ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                    {recentCourses.map((course, idx) => (
-                                        <div
-                                            key={course._id || idx}
-                                            className="bg-white shadow rounded-lg p-4 flex flex-col border border-blue-50"
-                                        >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-xs font-bold shadow">
-                                                    {course.code || "No Code"}
-                                                </span>
-                                                <span className="bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full font-semibold">
-                                                    {course.studentsCount || course.students?.length || 0} Students
-                                                </span>
-                                            </div>
-                                            <h3 className="text-base font-bold text-blue-700 mb-1">{course.name}</h3>
-                                            <p className="text-gray-600 text-xs flex-1">{course.description || "No description available."}</p>
-                                            <button
-                                                className="mt-3 bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-1.5 rounded-full font-semibold shadow transition"
-                                                onClick={() => router.push(`/teacher/courses/${course._id || course.id}`)}
-                                            >
-                                                View Details
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* All courses with search */}
-                        <section>
-                            <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-2xl font-bold text-blue-700">All Courses</h2>
-                                <input
-                                    type="text"
-                                    placeholder="Search courses..."
-                                    value={search}
-                                    onChange={e => setSearch(e.target.value)}
-                                    className="border border-blue-200 rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-                                />
-                            </div>
-                            {loading ? (
-                                <div className="flex justify-center items-center h-32">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
-                                    <span className="ml-4 text-blue-700 font-semibold">Loading courses...</span>
-                                </div>
-                            ) : filteredCourses.length > 0 ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-                                    {filteredCourses.map((course, idx) => (
-                                        <div
-                                            key={course._id || course.id || idx}
-                                            className="bg-white shadow-lg rounded-xl p-6 flex flex-col hover:shadow-2xl transition-shadow border border-blue-100 relative"
-                                        >
-                                            <div className="absolute -top-4 -right-4 bg-blue-100 text-blue-700 rounded-full px-3 py-1 text-xs font-bold shadow">
-                                                {course.code || "No Code"}
-                                            </div>
-                                            <h3 className="text-lg font-bold mb-2 text-blue-700">{course.name}</h3>
-                                            <p className="text-gray-600 mb-4 flex-1">{course.description || "No description available."}</p>
-                                            <div className="flex items-center justify-between mt-4">
-                                                <span className="inline-block bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full font-semibold">
-                                                    {course.studentsCount ? `${course.studentsCount} Students` : 
-                                                     course.students?.length ? `${course.students.length} Students` : "No Students"}
-                                                </span>
-                                                <button
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-1.5 rounded-full font-semibold shadow transition"
-                                                    onClick={() => router.push(`/teacher/courses/${course._id || course.id}`)}
-                                                >
-                                                    View Details
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center h-40 text-gray-400">
-                                    <span className="text-5xl mb-2">📚</span>
-                                    <p className="text-lg">No courses found.</p>
-                                </div>
-                            )}
-                        </section>
+                        <button
+                            onClick={handleLogout}
+                            className="mt-4 md:mt-0 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Logout
+                        </button>
                     </div>
+
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">Total Courses</p>
+                                    <p className="text-2xl font-bold text-gray-900">{totalCourses}</p>
+                                </div>
+                                <div className="p-3 rounded-full bg-blue-100 text-blue-600">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">Total Students</p>
+                                    <p className="text-2xl font-bold text-gray-900">{totalStudents}</p>
+                                </div>
+                                <div className="p-3 rounded-full bg-green-100 text-green-600">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">Attendance Rate</p>
+                                    <p className="text-2xl font-bold text-gray-900">{stats.attendanceRate}%</p>
+                                </div>
+                                <div className="p-3 rounded-full bg-yellow-100 text-yellow-600">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-gray-500">Upcoming Sessions</p>
+                                    <p className="text-2xl font-bold text-gray-900">{stats.upcomingSessions}</p>
+                                </div>
+                                <div className="p-3 rounded-full bg-purple-100 text-purple-600">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recent Sessions Section */}
+                    <div className="mb-10">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Sessions</h2>
+                        {recentSessions.length === 0 ? (
+                            <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+                                No recent sessions found
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {recentSessions.map((session) => (
+                                    <div key={session.sessionId} className="bg-white rounded-lg shadow p-5 border-l-4 border-blue-400 hover:shadow-lg transition">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {session.courseCode}
+                                            </span>
+                                            <span className="text-xs text-gray-500">
+                                                {new Date(session.date).toLocaleDateString(undefined, {
+                                                    weekday: "short",
+                                                    year: "numeric",
+                                                    month: "short",
+                                                    day: "numeric",
+                                                })}{" "}
+                                                {new Date(session.date).toLocaleTimeString(undefined, {
+                                                    hour: "2-digit",
+                                                    minute: "2-digit",
+                                                })}
+                                            </span>
+                                        </div>
+                                        <div className="font-semibold text-blue-900 mb-1">{session.courseName}</div>
+                                        <div className="flex gap-2 text-xs mt-2">
+                                            <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded font-semibold">
+                                                Attended: {session.attendedStudents?.length || 0}
+                                            </span>
+                                            <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded font-semibold">
+                                                Missed: {session.notAttendedStudents?.length || 0}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Tab Content */}
+                    {activeTab === 'courses' && (
+                        <div className="space-y-8">
+                            {/* Recent Courses */}
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Courses</h2>
+                                {recentCourses.length === 0 ? (
+                                    <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+                                        No recent courses found
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {recentCourses.map((course) => (
+                                            <div key={course._id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow">
+                                                <div className="p-6">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                            {course.code || 'N/A'}
+                                                        </span>
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                            {course.students?.length || 0} students
+                                                        </span>
+                                                    </div>
+                                                    <h3 className="text-lg font-medium text-gray-900 mb-2">{course.name}</h3>
+                                                    <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+                                                        {course.description || 'No description available'}
+                                                    </p>
+                                                    <button
+                                                        onClick={() => router.push(`/teacher/courses/${course._id}`)}
+                                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors"
+                                                    >
+                                                        View Course
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'students' && (
+                        <div>
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Students</h2>
+                            {recentStudents.length === 0 ? (
+                                <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
+                                    No students found
+                                </div>
+                            ) : (
+                                <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                                    <ul className="divide-y divide-gray-200">
+                                        {recentStudents.map((student) => (
+                                            <li key={student._id} className="hover:bg-gray-50">
+                                                <div className="px-4 py-4 sm:px-6">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center">
+                                                            <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                                                {student.name?.charAt(0) || 'S'}
+                                                            </div>
+                                                            <div className="ml-4">
+                                                                <div className="text-sm font-medium text-gray-900">
+                                                                    {student.name}
+                                                                </div>
+                                                                <div className="text-sm text-gray-500">
+                                                                    {student.email}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="ml-2 flex-shrink-0 flex">
+                                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                                Active
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'analytics' && (
+                        <div>
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4">Attendance Analytics</h2>
+                            <div className="bg-white rounded-lg shadow p-6">
+                                <div className="h-64 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                        </svg>
+                                        <h3 className="mt-2 text-sm font-medium text-gray-900">Analytics coming soon</h3>
+                                        <p className="mt-1 text-sm text-gray-500">
+                                            We're working on detailed analytics for your courses and students.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </main>
             </div>
         </div>

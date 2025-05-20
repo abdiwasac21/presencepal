@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import Sidebar from "@/components/TeacherSidebar";
 import Header from "@/components/Header";
 
-// const baseUrl = 'https://presencepalbackend-1.onrender.com';
-const baseUrl = "http://localhost:80";
+const baseUrl = 'https://presencepalbackend-1.onrender.com';
+// const baseUrl = "http://localhost:80";
 
 export default function TeacherCoursesPage() {
   const router = useRouter();
@@ -51,9 +51,9 @@ export default function TeacherCoursesPage() {
   );
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+    <div className="flex h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 p-6 overflow-y-auto">
         <Header
           title="My Courses"
           searchValue={search}

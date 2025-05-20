@@ -66,11 +66,11 @@ const StudentClassPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="h-screen bg-gray-100 flex flex-col">
       <Header title="PresencePal - Student Portal" />
       <div className="flex flex-1">
         <StudentSideBar />
-        <main className="flex-1 p-10">
+        <main className="flex-1 p-6 overflow-y-auto">
           <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-10">
             <h2 className="text-2xl font-bold mb-6 text-blue-800">My Class</h2>
             <div className="mb-4">

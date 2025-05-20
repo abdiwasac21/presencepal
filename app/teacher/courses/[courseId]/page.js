@@ -4,7 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import Sidebar from "@/components/TeacherSidebar";
 import Header from "@/components/Header";
 
-const baseUrl = "http://localhost:80";
+// const baseUrl = "http://localhost:80";
+const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
 
 export default function CourseDetailsPage() {
   const { courseId } = useParams();
@@ -32,9 +33,9 @@ export default function CourseDetailsPage() {
   }, [courseId]);
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="h-screen flex bg-gray-50">
       <Sidebar />
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 overflow-y-auto">
         <Header title="Course Details" />
         <div className="max-w-3xl mx-auto mt-8">
           {loading ? (
