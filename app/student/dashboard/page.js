@@ -187,9 +187,6 @@ const AttendedCoursesDashboard = () => {
                   </div>
                 </div>
 <div className="bg-white rounded-lg shadow p-6"> <div className="flex items-center justify-between"> <div> <p className="text-sm font-medium text-gray-500">Highest Attendance</p> <p className="text-3xl font-bold text-gray-900"> {attendedCourses.length > 0 ? Math.max(...attendedCourses.map(c => c.attendanceCount || 0)) : 0} </p> </div> <div className="p-3 rounded-full bg-yellow-100 text-yellow-600"> <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3" /> </svg> </div> </div> </div> </div>
-php-template
-Copy
-Edit
           {/* Attendance Overview Pie Chart */}
           <div className="mb-12">
             <h2 className="text-xl font-semibold mb-4 text-gray-700">Attendance Overview</h2>
