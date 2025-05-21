@@ -129,9 +129,9 @@ const ClassPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-indigo-50 to-blue-100">
+    <div className="h-screen flex bg-gradient-to-br from-indigo-50 to-blue-100">
       <Sidebar />
-      <div className="flex-1 p-0 md:p-10 flex flex-col">
+      <div className="flex-1 p-6 overflow-y-auto">
         <Header title="Manage Classes" />
         <div className="max-w-2xl mx-auto bg-white p-8 shadow-2xl rounded-2xl mb-10 mt-8">
           <form onSubmit={handleSubmit}>

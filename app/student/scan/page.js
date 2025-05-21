@@ -6,9 +6,11 @@ import Sidebar from '@/components/StudentSideBar';
 import Header from '@/components/Header';
 
 const baseUrl = "https://presencepalbackend-1.onrender.com";
-// const baseUrl = "http://localhost:80";
+// const baseUrl = 'http://localhost:80';
 
 export default function StudentScanPage() {
+  const [courses, setCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState('');
   const [scanResult, setScanResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -18,30 +20,52 @@ export default function StudentScanPage() {
 
   const codeReader = useMemo(() => new BrowserMultiFormatReader(), []);
 
+  // Fetch student courses from /student/courses
   useEffect(() => {
     const token = localStorage.getItem('studentAuthToken');
     if (!token) {  
       router.push('/student/login');
       return;
     }
+
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/student/courses`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await response.json();
+        setCourses(Array.isArray(data) ? data : data.data || []);
+      } catch (error) {
+        console.error('Failed to fetch courses:', error);
+        setCourses([]);
+      }
+    };
+
+    fetchCourses();
+  }, [router]);
+
+  useEffect(() => {
     let active = true;
-    if (videoRef.current) {
+    if (videoRef.current && selectedCourse) {
       codeReader.decodeFromVideoDevice(null, videoRef.current, (result, error) => {
         if (!active) return;
         if (result) {
+          let sessionId = null;
           try {
-            // Expect QR code to contain JSON: { sessionId, courseId }
+            // Try to parse as JSON first
             const qrData = JSON.parse(result.getText());
-            if (!qrData.sessionId || !qrData.courseId) {
-              setErrorMsg('QR code missing session or course ID.');
-              codeReader.reset();
-              return;
-            }
-            setScanResult(`Session: ${qrData.sessionId}, Course: ${qrData.courseId}`);
-            handleSendAttendance(qrData.sessionId, qrData.courseId);
+            sessionId = qrData.sessionId;
           } catch (e) {
-            setErrorMsg('Invalid QR code format.');
+            // If not JSON, treat as plain sessionId
+            sessionId = result.getText();
           }
+          if (!sessionId) {
+            setErrorMsg('QR code missing session ID.');
+            codeReader.reset();
+            return;
+          }
+          setScanResult(`Session: ${sessionId}`);
+          handleSendAttendance(sessionId, selectedCourse);
           codeReader.reset();
         }
         if (error && !(error instanceof Error)) {
@@ -56,7 +80,7 @@ export default function StudentScanPage() {
       codeReader.reset();
     };
     // eslint-disable-next-line
-  }, [codeReader]);
+  }, [codeReader, selectedCourse]);
 
   const handleSendAttendance = async (sessionId, courseId) => {
     setLoading(true);
@@ -119,7 +143,20 @@ export default function StudentScanPage() {
             {successMsg && (
               <div className="mb-4 text-green-600 text-center">{successMsg}</div>
             )}
-            {!scanResult && (
+            <select
+              className="w-full mb-4 p-2 border border-gray-300 rounded"
+              value={selectedCourse}
+              onChange={e => setSelectedCourse(e.target.value)}
+              required
+            >
+              <option value="">Select Course</option>
+              {courses.map(course => (
+                <option key={course._id} value={course._id}>
+                  {course.name} ({course.code})
+                </option>
+              ))}
+            </select>
+            {!scanResult && selectedCourse && (
               <div className="w-full flex flex-col items-center">
                 <video
                   ref={videoRef}
@@ -129,6 +166,9 @@ export default function StudentScanPage() {
                 />
                 <p className="mt-4 text-center text-gray-600">Scanning...</p>
               </div>
+            )}
+            {!selectedCourse && (
+              <div className="text-gray-500 mb-4">Please select a course to start scanning.</div>
             )}
             {scanResult && (
               <div className="text-center">

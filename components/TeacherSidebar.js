@@ -39,9 +39,6 @@ const Sidebar = () => {
                     <Link href="/teacher/courses" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
                         <Settings className="w-5 h-5" /> Course
                     </Link>
-                    <Link href="/teacher/class" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
-                        <Settings className="w-5 h-5" /> Class
-                    </Link>
                     {/* Attendance Dropdown */}
                     <div>
                         <button
