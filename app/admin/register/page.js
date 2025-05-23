@@ -1,13 +1,13 @@
 "use client";
-import React, { useState } from 'react';
-import Sidebar from '@/components/sideBar';
-import Header from '@/components/Header';
+import React, { useState } from "react";
+import Sidebar from "@/components/sideBar";
+import Header from "@/components/Header";
 
-const baseUrl = 'https://presencepalbackend-1.onrender.com';
-// const baseUrl = 'http://localhost:80'; for testing locally 
+const baseUrl = "https://presencepalbackend-1.onrender.com";
+// const baseUrl = "http://localhost:80";
 
 const StudentTeacherRegister = () => {
-  const [role, setRole] = useState('student'); // 'student' or 'teacher'
+  const [role, setRole] = useState("student"); // 'student' or 'teacher'
   const [form, setForm] = useState({
     name: "",
     universityId: "",
@@ -15,7 +15,7 @@ const StudentTeacherRegister = () => {
     className: "",
     email: "",
   });
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handleRoleChange = (roleValue) => {
     setRole(roleValue);
@@ -26,7 +26,7 @@ const StudentTeacherRegister = () => {
       className: "",
       email: "",
     });
-    setMessage('');
+    setMessage("");
   };
 
   const handleChange = (e) => {
@@ -45,12 +45,14 @@ const StudentTeacherRegister = () => {
       let payload = {};
       if (role === "student") {
         endpoint = "/teacher/student/register";
-        payload = [{
-          name: form.name,
-          universityId: form.universityId,
-          password: form.password,
-          className: form.className
-        }];
+        payload = [
+          {
+            name: form.name,
+            universityId: form.universityId,
+            password: form.password,
+            className: form.className,
+          },
+        ];
       } else {
         endpoint = "/teacher/create/teacher";
         payload = {
@@ -61,12 +63,12 @@ const StudentTeacherRegister = () => {
       }
 
       const response = await fetch(`${baseUrl}${endpoint}`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       const text = await response.text();
@@ -108,14 +110,22 @@ const StudentTeacherRegister = () => {
             <div className="flex justify-center mb-6">
               <button
                 type="button"
-                className={`px-4 py-2 rounded-l-lg font-semibold border ${role === "student" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}
+                className={`px-4 py-2 rounded-l-lg font-semibold border ${
+                  role === "student"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700"
+                }`}
                 onClick={() => handleRoleChange("student")}
               >
                 Student
               </button>
               <button
                 type="button"
-                className={`px-4 py-2 rounded-r-lg font-semibold border ${role === "teacher" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}
+                className={`px-4 py-2 rounded-r-lg font-semibold border ${
+                  role === "teacher"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 text-gray-700"
+                }`}
                 onClick={() => handleRoleChange("teacher")}
               >
                 Teacher
@@ -123,7 +133,10 @@ const StudentTeacherRegister = () => {
             </div>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-gray-700 text-lg font-semibold mb-2" htmlFor="name">
+                <label
+                  className="block text-gray-700 text-lg font-semibold mb-2"
+                  htmlFor="name"
+                >
                   Name
                 </label>
                 <input
@@ -139,7 +152,10 @@ const StudentTeacherRegister = () => {
               </div>
               {role === "student" && (
                 <div>
-                  <label className="block text-gray-700 text-lg font-semibold mb-2" htmlFor="universityId">
+                  <label
+                    className="block text-gray-700 text-lg font-semibold mb-2"
+                    htmlFor="universityId"
+                  >
                     University ID
                   </label>
                   <input
@@ -155,7 +171,10 @@ const StudentTeacherRegister = () => {
                 </div>
               )}
               <div>
-                <label className="block text-gray-700 text-lg font-semibold mb-2" htmlFor="password">
+                <label
+                  className="block text-gray-700 text-lg font-semibold mb-2"
+                  htmlFor="password"
+                >
                   Password
                 </label>
                 <input
@@ -171,7 +190,10 @@ const StudentTeacherRegister = () => {
               </div>
               {role === "student" && (
                 <div>
-                  <label className="block text-gray-700 text-lg font-semibold mb-2" htmlFor="className">
+                  <label
+                    className="block text-gray-700 text-lg font-semibold mb-2"
+                    htmlFor="className"
+                  >
                     Class Name
                   </label>
                   <input
@@ -188,7 +210,10 @@ const StudentTeacherRegister = () => {
               )}
               {role === "teacher" && (
                 <div>
-                  <label className="block text-gray-700 text-lg font-semibold mb-2" htmlFor="email">
+                  <label
+                    className="block text-gray-700 text-lg font-semibold mb-2"
+                    htmlFor="email"
+                  >
                     Email
                   </label>
                   <input
@@ -204,7 +229,7 @@ const StudentTeacherRegister = () => {
                 </div>
               )}
               <div className="flex justify-center">
-                <button 
+                <button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded-lg shadow transition duration-150"
                 >
@@ -213,7 +238,13 @@ const StudentTeacherRegister = () => {
               </div>
             </form>
             {message && (
-              <div className={`mt-6 text-center text-base font-medium ${message.includes("success") ? "text-green-600" : "text-red-600"}`}>
+              <div
+                className={`mt-6 text-center text-base font-medium ${
+                  message.includes("success")
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
                 {message}
               </div>
             )}
