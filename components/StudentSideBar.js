@@ -26,7 +26,7 @@ const StudentSideBar = () => {
     <>
       {/* Mobile Toggle Button */}
       <button
-        className={`md:hidden fixed top-4 left-4 z-50 bg-blue-800 hover:bg-blue-700 p-2 rounded-lg shadow-lg transition-all duration-300 ${
+        className={`md:hidden fixed top-4 left-4 z-50 bg-green-800 hover:bg-green-700 p-2 rounded-lg shadow-lg transition-all duration-300 ${
           sidebarOpen ? "rotate-90" : ""
         }`}
         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -42,21 +42,21 @@ const StudentSideBar = () => {
       {/* Sidebar */}
       <div
         className={`
-          fixed top-0 left-0 h-full w-72 bg-gradient-to-b from-blue-900 to-blue-800 text-white flex flex-col
+          fixed top-0 left-0 h-full w-72 bg-gradient-to-b from-green-900 to-green-800 text-white flex flex-col
           transform transition-all duration-300 ease-in-out z-40
           ${sidebarOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
           md:translate-x-0 md:static md:h-screen
-          border-r border-blue-700
+          border-r border-green-700
         `}
       >
         {/* Sidebar Header */}
-        <div className="p-6 pb-4 flex items-center justify-between border-b border-blue-700">
+        <div className="p-6 pb-4 flex items-center justify-between border-b border-green-700">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                className="w-6 h-6 text-blue-900"
+                className="w-6 h-6 text-green-900"
               >
                 <path
                   fill="currentColor"
@@ -68,7 +68,7 @@ const StudentSideBar = () => {
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden text-blue-200 hover:text-white"
+            className="md:hidden text-green-200 hover:text-white"
           >
             <X className="w-6 h-6" />
           </button>
@@ -79,10 +79,10 @@ const StudentSideBar = () => {
           {/* Dashboard */}
           <Link
             href="/student/dashboard"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-700 hover:bg-opacity-50 transition-all group"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-700 hover:bg-opacity-50 transition-all group"
             onClick={() => setSidebarOpen(false)}
           >
-            <div className="p-2 bg-blue-700 rounded-lg group-hover:bg-yellow-500 group-hover:text-blue-900 transition">
+            <div className="p-2 bg-green-700 rounded-lg group-hover:bg-yellow-500 group-hover:text-green-900 transition">
               <Home className="w-5 h-5" />
             </div>
             <span className="font-medium">Dashboard</span>
@@ -91,10 +91,10 @@ const StudentSideBar = () => {
           {/* Change Password */}
           <Link
             href="/student/change-password"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-700 hover:bg-opacity-50 transition-all group"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-700 hover:bg-opacity-50 transition-all group"
             onClick={() => setSidebarOpen(false)}
           >
-            <div className="p-2 bg-blue-700 rounded-lg group-hover:bg-yellow-500 group-hover:text-blue-900 transition">
+            <div className="p-2 bg-green-700 rounded-lg group-hover:bg-yellow-500 group-hover:text-green-900 transition">
               <Key className="w-5 h-5" />
             </div>
             <span className="font-medium">Change Password</span>
@@ -104,10 +104,10 @@ const StudentSideBar = () => {
           <div className="mt-2">
             <div
               onClick={() => setAttendanceOpen(!attendanceOpen)}
-              className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg hover:bg-blue-700 hover:bg-opacity-50 cursor-pointer transition-all"
+              className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg hover:bg-green-700 hover:bg-opacity-50 cursor-pointer transition-all"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-700 rounded-lg">
+                <div className="p-2 bg-green-700 rounded-lg">
                   <CalendarCheck className="w-5 h-5" />
                 </div>
                 <span className="font-medium">Attendance</span>
@@ -130,24 +130,24 @@ const StudentSideBar = () => {
             </div>
 
             {attendanceOpen && (
-              <div className="ml-4 pl-8 mt-1 space-y-1 border-l-2 border-blue-700">
+              <div className="ml-4 pl-8 mt-1 space-y-1 border-l-2 border-green-700">
                 <Link
                   href="/student/scan"
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-700 hover:bg-opacity-30 transition-all group"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-green-700 hover:bg-opacity-30 transition-all group"
                   onClick={() => setSidebarOpen(false)}
                 >
                   <div className="p-1">
-                    <ScanLine className="w-4 h-4 text-blue-300 group-hover:text-yellow-400" />
+                    <ScanLine className="w-4 h-4 text-green-300 group-hover:text-yellow-400" />
                   </div>
                   <span>Mark Attendance</span>
                 </Link>
                 <Link
                   href="/student/view-attendance"
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-700 hover:bg-opacity-30 transition-all group"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-green-700 hover:bg-opacity-30 transition-all group"
                   onClick={() => setSidebarOpen(false)}
                 >
                   <div className="p-1">
-                    <Users className="w-4 h-4 text-blue-300 group-hover:text-yellow-400" />
+                    <Users className="w-4 h-4 text-green-300 group-hover:text-yellow-400" />
                   </div>
                   <span>View Attendance</span>
                 </Link>
@@ -171,7 +171,7 @@ const StudentSideBar = () => {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 pt-3 border-t border-blue-700 text-xs text-blue-300 text-center">
+        <div className="p-4 pt-3 border-t border-green-700 text-xs text-green-300 text-center">
           <p>
             Powered by{" "}
             <span className="font-bold text-yellow-400">Amoud University</span>

@@ -60,7 +60,7 @@ const StudentLogin = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-green-900 to-green-700 overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full opacity-10">
         <div className="absolute top-20 left-10 w-40 h-40 bg-yellow-400 rounded-full filter blur-3xl"></div>
@@ -75,7 +75,7 @@ const StudentLogin = () => {
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
-              className="w-8 h-8 text-blue-800"
+              className="w-8 h-8 text-green-800"
             >
               <path
                 fill="currentColor"
