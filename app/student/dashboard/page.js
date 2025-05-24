@@ -126,7 +126,7 @@ const AttendedCoursesDashboard = () => {
   );
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+    <div className="flex h-screen bg-gradient-to-br from-green-50 to-green-100">
       <StudentSideBar />
       <div className="flex-1 overflow-y-auto">
         <Header title="Attended Courses" />
@@ -162,10 +162,10 @@ const AttendedCoursesDashboard = () => {
               <div className="mb-8">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                   <div>
-                    <h1 className="text-2xl font-bold text-blue-900">
+                    <h1 className="text-2xl font-bold text-green-900">
                       Your Course Attendance
                     </h1>
-                    <p className="text-blue-700">
+                    <p className="text-green-700">
                       Track your attendance across all courses
                     </p>
                   </div>
@@ -174,13 +174,13 @@ const AttendedCoursesDashboard = () => {
                       <input
                         type="text"
                         placeholder="Search courses..."
-                        className="pl-10 pr-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 w-full md:w-64 bg-white/70 shadow-sm"
+                        className="pl-10 pr-4 py-2 border border-green-200 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 w-full md:w-64 bg-white/70 shadow-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg
-                          className="h-5 w-5 text-blue-400"
+                          className="h-5 w-5 text-green-400"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -200,10 +200,10 @@ const AttendedCoursesDashboard = () => {
 
               {/* Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl shadow-lg p-6 text-white transform hover:scale-[1.02] transition-transform">
+                <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-xl shadow-lg p-6 text-white transform hover:scale-[1.02] transition-transform">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-blue-100">
+                      <p className="text-sm font-medium text-green-100">
                         Total Courses
                       </p>
                       <p className="text-3xl font-bold">
@@ -254,10 +254,10 @@ const AttendedCoursesDashboard = () => {
                     </div>
                   </div>
                 </div>
-                <div className="bg-gradient-to-br from-blue-700 to-blue-900 rounded-xl shadow-lg p-6 text-white transform hover:scale-[1.02] transition-transform">
+                <div className="bg-gradient-to-br from-green-700 to-green-900 rounded-xl shadow-lg p-6 text-white transform hover:scale-[1.02] transition-transform">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-blue-100">
+                      <p className="text-sm font-medium text-green-100">
                         Highest Attendance
                       </p>
                       <p className="text-3xl font-bold">
@@ -290,13 +290,13 @@ const AttendedCoursesDashboard = () => {
               </div>
 
               {/* Filter Tabs */}
-              <div className="mb-6 bg-white rounded-lg p-1 shadow-inner border border-blue-100 inline-flex">
+              <div className="mb-6 bg-white rounded-lg p-1 shadow-inner border border-green-100 inline-flex">
                 <button
                   onClick={() => setActiveTab("all")}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     activeTab === "all"
-                      ? "bg-blue-600 text-white"
-                      : "text-blue-700 hover:bg-blue-50"
+                      ? "bg-green-600 text-white"
+                      : "text-green-700 hover:bg-green-50"
                   }`}
                 >
                   All Courses
@@ -334,13 +334,13 @@ const AttendedCoursesDashboard = () => {
               </div>
 
               {/* Attendance Overview */}
-              <div className="mb-12 bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+              <div className="mb-12 bg-white rounded-xl shadow-lg p-6 border border-green-100">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-blue-900">
+                  <h2 className="text-xl font-semibold text-green-900">
                     Attendance Overview
                   </h2>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-blue-700">
+                    <span className="text-sm text-green-700">
                       {filteredCourses.length} courses
                     </span>
                   </div>
@@ -349,7 +349,7 @@ const AttendedCoursesDashboard = () => {
                   {filteredCourses.length === 0 ? (
                     <div className="col-span-full text-center py-8">
                       <svg
-                        className="mx-auto h-12 w-12 text-blue-400"
+                        className="mx-auto h-12 w-12 text-green-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -361,7 +361,7 @@ const AttendedCoursesDashboard = () => {
                           d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <p className="mt-2 text-blue-700">
+                      <p className="mt-2 text-green-700">
                         No courses found matching your criteria
                       </p>
                     </div>
@@ -380,7 +380,7 @@ const AttendedCoursesDashboard = () => {
                       return (
                         <div
                           key={course._id}
-                          className="bg-gradient-to-br from-blue-50 to-white rounded-xl shadow p-5 border border-blue-100 hover:shadow-md transition-shadow"
+                          className="bg-gradient-to-br from-green-50 to-white rounded-xl shadow p-5 border border-green-100 hover:shadow-md transition-shadow"
                         >
                           <div className="flex items-start">
                             <div className="flex-shrink-0">
@@ -423,14 +423,14 @@ const AttendedCoursesDashboard = () => {
                               </svg>
                             </div>
                             <div>
-                              <h3 className="text-lg font-bold text-blue-900">
+                              <h3 className="text-lg font-bold text-green-900">
                                 {course.code}
                               </h3>
-                              <p className="text-blue-700 text-sm mb-2">
+                              <p className="text-green-700 text-sm mb-2">
                                 {course.name}
                               </p>
                               <div className="flex items-center">
-                                <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-100 text-blue-800">
+                                <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-100 text-green-800">
                                   {attendanceCount} sessions
                                 </span>
                               </div>
@@ -444,12 +444,12 @@ const AttendedCoursesDashboard = () => {
               </div>
 
               {/* Course List with Progress Bars */}
-              <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+              <div className="bg-white rounded-xl shadow-lg p-6 border border-green-100">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold text-blue-900">
+                  <h2 className="text-xl font-semibold text-green-900">
                     Detailed Course Attendance
                   </h2>
-                  <div className="text-sm text-blue-600">
+                  <div className="text-sm text-green-600">
                     Sorted by:{" "}
                     {sortConfig.key.replace(/([A-Z])/g, " $1").toLowerCase()} (
                     {sortConfig.direction})
@@ -457,7 +457,7 @@ const AttendedCoursesDashboard = () => {
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full table-auto">
-                    <thead className="bg-blue-900 text-white">
+                    <thead className="bg-green-900 text-white">
                       <tr>
                         <th
                           className="cursor-pointer p-3 text-left rounded-tl-lg"
@@ -502,11 +502,11 @@ const AttendedCoursesDashboard = () => {
                         <tr>
                           <td
                             colSpan="4"
-                            className="text-center p-6 text-blue-700"
+                            className="text-center p-6 text-green-700"
                           >
                             <div className="flex flex-col items-center justify-center py-8">
                               <svg
-                                className="h-12 w-12 text-blue-400 mb-2"
+                                className="h-12 w-12 text-green-400 mb-2"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -524,7 +524,7 @@ const AttendedCoursesDashboard = () => {
                                   setActiveTab("all");
                                   setSearchTerm("");
                                 }}
-                                className="mt-2 text-sm text-blue-600 hover:text-blue-800 underline"
+                                className="mt-2 text-sm text-green-600 hover:text-green-800 underline"
                               >
                                 Clear filters
                               </button>
@@ -540,30 +540,30 @@ const AttendedCoursesDashboard = () => {
                             <tr
                               key={course._id}
                               className={`${
-                                index % 2 === 0 ? "bg-blue-50" : "bg-white"
-                              } hover:bg-blue-100 transition-colors`}
+                                index % 2 === 0 ? "bg-green-50" : "bg-white"
+                              } hover:bg-green-100 transition-colors`}
                             >
-                              <td className="p-3 border-b border-blue-100 text-blue-900 font-medium">
+                              <td className="p-3 border-b border-green-100 text-green-900 font-medium">
                                 <div className="font-semibold">
                                   {course.code}
                                 </div>
                               </td>
-                              <td className="p-3 border-b border-blue-100 text-blue-800">
+                              <td className="p-3 border-b border-green-100 text-green-800">
                                 {course.name}
                               </td>
-                              <td className="p-3 border-b border-blue-100 text-blue-900 font-medium">
+                              <td className="p-3 border-b border-green-100 text-green-900 font-medium">
                                 <div className="flex items-center">
                                   <span className="mr-2">
                                     {attendanceCount}
                                   </span>
-                                  <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                                  <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
                                     {Math.round(percentage)}%
                                   </span>
                                 </div>
                               </td>
-                              <td className="p-3 border-b border-blue-100">
+                              <td className="p-3 border-b border-green-100">
                                 <div className="flex items-center">
-                                  <div className="w-full bg-blue-200 rounded-full h-2.5 mr-2">
+                                  <div className="w-full bg-green-200 rounded-full h-2.5 mr-2">
                                     <div
                                       className="bg-gradient-to-r from-yellow-500 to-yellow-600 h-2.5 rounded-full transition-all"
                                       style={{ width: `${percentage}%` }}
