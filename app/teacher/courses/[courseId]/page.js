@@ -5,8 +5,7 @@ import Sidebar from "@/components/TeacherSidebar";
 import Header from "@/components/Header";
 
 // const baseUrl = "http://localhost:80";
-const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
-
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 export default function CourseDetailsPage() {
   const { courseId } = useParams();
   const router = useRouter();
@@ -47,9 +46,13 @@ export default function CourseDetailsPage() {
             </div>
           ) : (
             <div className="bg-white rounded-xl shadow-lg p-8 border border-blue-100">
-              <h1 className="text-2xl font-bold text-blue-800 mb-2">{course.name}</h1>
+              <h1 className="text-2xl font-bold text-blue-800 mb-2">
+                {course.name}
+              </h1>
               <div className="mb-2 text-sm text-gray-500 flex items-center gap-4">
-                <span className="font-mono bg-blue-50 px-2 py-1 rounded">{course.code || "No Code"}</span>
+                <span className="font-mono bg-blue-50 px-2 py-1 rounded">
+                  {course.code || "No Code"}
+                </span>
                 <span className="bg-green-50 text-green-700 px-2 py-1 rounded text-xs font-semibold">
                   Semester: {course.semester || "N/A"}
                 </span>
@@ -58,13 +61,20 @@ export default function CourseDetailsPage() {
                 <span className="font-semibold text-blue-700">Teacher:</span>{" "}
                 {course.teacher?.username} ({course.teacher?.email})
               </div>
-              <p className="mb-4 text-gray-700">{course.description || "No description available."}</p>
+              <p className="mb-4 text-gray-700">
+                {course.description || "No description available."}
+              </p>
               <div className="mb-6">
-                <h2 className="text-lg font-bold text-blue-700 mb-2">Students ({course.students?.length || 0})</h2>
+                <h2 className="text-lg font-bold text-blue-700 mb-2">
+                  Students ({course.students?.length || 0})
+                </h2>
                 {course.students && course.students.length > 0 ? (
                   <ul className="divide-y divide-blue-50 border rounded-lg bg-blue-50">
                     {course.students.map((student) => (
-                      <li key={student._id} className="flex items-center px-4 py-2">
+                      <li
+                        key={student._id}
+                        className="flex items-center px-4 py-2"
+                      >
                         <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-200 text-blue-800 font-bold mr-3 text-xs border border-blue-300">
                           {student.name
                             .split(" ")
@@ -78,7 +88,9 @@ export default function CourseDetailsPage() {
                     ))}
                   </ul>
                 ) : (
-                  <div className="text-gray-400 italic">No students enrolled.</div>
+                  <div className="text-gray-400 italic">
+                    No students enrolled.
+                  </div>
                 )}
               </div>
               <button

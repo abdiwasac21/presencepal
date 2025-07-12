@@ -3,7 +3,7 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import StudentSideBar from "@/components/StudentSideBar";
 
-const baseUrl = "https://presencepalbackend-1.onrender.com";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 // const baseUrl = "http://localhost:80";
 
 export default function ChangePasswordPage() {

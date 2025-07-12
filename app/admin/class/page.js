@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/sideBar";
 import Header from "@/components/Header";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-const baseUrl = "https://presencepalbackend-1.onrender.com";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const ClassPage = () => {
   const [className, setClassName] = useState("");
@@ -24,7 +24,7 @@ const ClassPage = () => {
     try {
       const token = localStorage.getItem("authToken");
       const res = await fetch(`${baseUrl}/teacher/classes`, {
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const text = await res.text();
       let data;
@@ -46,11 +46,11 @@ const ClassPage = () => {
     try {
       const token = localStorage.getItem("authToken");
       const res = await fetch(`${baseUrl}/teacher/courses`, {
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       const map = {};
-      (Array.isArray(data) ? data : (data.courses || [])).forEach(course => {
+      (Array.isArray(data) ? data : data.courses || []).forEach((course) => {
         map[course._id] = course.name;
       });
       setCourseMap(map);
@@ -65,11 +65,11 @@ const ClassPage = () => {
       const token = localStorage.getItem("authToken");
       const res = await fetch(`${baseUrl}/teacher/create/class`, {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name: className })
+        body: JSON.stringify({ name: className }),
       });
       const data = await res.json();
       setMessage(data.message || "Class created successfully");
@@ -86,7 +86,7 @@ const ClassPage = () => {
       const token = localStorage.getItem("authToken");
       await fetch(`${baseUrl}/teacher/class/${id}`, {
         method: "DELETE",
-        headers: { "Authorization": `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setMessage("Class deleted");
       fetchClasses();
@@ -105,11 +105,11 @@ const ClassPage = () => {
       const token = localStorage.getItem("authToken");
       await fetch(`${baseUrl}/teacher/class/${id}`, {
         method: "PATCH",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name: editName })
+        body: JSON.stringify({ name: editName }),
       });
       setEditingId(null);
       setEditName("");
@@ -122,9 +122,9 @@ const ClassPage = () => {
 
   // Toggle open/close for courses in a class card
   const toggleCourses = (id) => {
-    setOpenCourses(prev => ({
+    setOpenCourses((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
@@ -139,7 +139,7 @@ const ClassPage = () => {
               <label className="block text-blue-700 text-lg font-semibold mb-2">
                 Class Name
               </label>
-              <input 
+              <input
                 type="text"
                 value={className}
                 onChange={(e) => setClassName(e.target.value)}
@@ -149,7 +149,7 @@ const ClassPage = () => {
               />
             </div>
             <div className="text-center">
-              <button 
+              <button
                 type="submit"
                 className="bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white font-bold py-3 px-10 rounded-xl shadow-lg text-lg transition"
               >
@@ -157,21 +157,32 @@ const ClassPage = () => {
               </button>
             </div>
           </form>
-          {message && <p className="mt-6 text-center text-base font-semibold text-blue-600">{message}</p>}
+          {message && (
+            <p className="mt-6 text-center text-base font-semibold text-blue-600">
+              {message}
+            </p>
+          )}
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-extrabold mb-8 text-blue-700 tracking-tight">All Classes</h2>
-          {classes.length === 0 && <p className="text-gray-500">No classes found.</p>}
+          <h2 className="text-2xl font-extrabold mb-8 text-blue-700 tracking-tight">
+            All Classes
+          </h2>
+          {classes.length === 0 && (
+            <p className="text-gray-500">No classes found.</p>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {classes.map(cls => (
-              <div key={cls._id} className="bg-white rounded-xl shadow-lg p-5 flex flex-col border border-blue-100">
+            {classes.map((cls) => (
+              <div
+                key={cls._id}
+                className="bg-white rounded-xl shadow-lg p-5 flex flex-col border border-blue-100"
+              >
                 {editingId === cls._id ? (
                   <div className="flex flex-col gap-4">
                     <input
                       type="text"
                       value={editName}
-                      onChange={e => setEditName(e.target.value)}
+                      onChange={(e) => setEditName(e.target.value)}
                       className="px-3 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     <div className="flex gap-2">
@@ -191,7 +202,9 @@ const ClassPage = () => {
                   </div>
                 ) : (
                   <>
-                    <span className="font-semibold text-lg text-blue-800 mb-2">{cls.name}</span>
+                    <span className="font-semibold text-lg text-blue-800 mb-2">
+                      {cls.name}
+                    </span>
                     <div className="flex gap-2 mt-2">
                       <button
                         onClick={() => startEdit(cls._id, cls.name)}
@@ -228,14 +241,20 @@ const ClassPage = () => {
                   <div className="mt-3">
                     <span className="font-medium text-gray-700">Courses:</span>
                     <ul className="list-disc ml-6 mt-1">
-                      {(cls.courses && cls.courses.length > 0) ? (
-                        cls.courses.map(courseId => (
+                      {cls.courses && cls.courses.length > 0 ? (
+                        cls.courses.map((courseId) => (
                           <li key={courseId} className="text-gray-800">
-                            {courseMap[courseId] || <span className="text-gray-400 italic">Unknown Course</span>}
+                            {courseMap[courseId] || (
+                              <span className="text-gray-400 italic">
+                                Unknown Course
+                              </span>
+                            )}
                           </li>
                         ))
                       ) : (
-                        <li className="text-gray-400 italic">No courses assigned</li>
+                        <li className="text-gray-400 italic">
+                          No courses assigned
+                        </li>
                       )}
                     </ul>
                   </div>

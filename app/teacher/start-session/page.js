@@ -5,7 +5,7 @@ import Sidebar from "@/components/TeacherSidebar";
 import Header from "@/components/Header";
 import { BrowserQRCodeSvgWriter } from "@zxing/library";
 
-const baseUrl = "https://presencepalbackend-1.onrender.com";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 // const baseUrl = "http://localhost:80";
 
 export default function TeacherStartSessionPage() {

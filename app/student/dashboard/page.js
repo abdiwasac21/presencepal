@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import StudentSideBar from "@/components/StudentSideBar";
 import Header from "@/components/Header";
 
-const baseUrl = "https://presencepalbackend-1.onrender.com";
-
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 const AttendedCoursesDashboard = () => {
   const [attendedCourses, setAttendedCourses] = useState([]);
   const [loading, setLoading] = useState(true);
