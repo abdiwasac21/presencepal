@@ -25,7 +25,7 @@ const LoginForm = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Login successful:", data);
+
         // Store the auth token in localStorage so it can be used in future requests.
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("loggedIn", "true");

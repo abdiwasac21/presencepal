@@ -23,7 +23,6 @@ const CSVUpload = () => {
       header: true, // Assumes the CSV file has headers: name, universityId, class
       skipEmptyLines: true,
       complete: (results) => {
-        console.log("Parsed CSV:", results.data);
         setStudents(results.data);
         setCsvError(""); // Clear any previous error
       },
@@ -51,8 +50,6 @@ const CSVUpload = () => {
         class: s.class || "BSE", // Default to "BSE" if no class is provided
         password: DEFAULT_PASSWORD,
       }));
-
-      console.log("Payload being sent:", JSON.stringify(payload, null, 2));
 
       // Send a POST request with an array of student objects.
       const response = await fetch(`${baseUrl}/teacher/student/register`, {
