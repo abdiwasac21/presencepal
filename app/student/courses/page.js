@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import StudentSideBar from "@/components/StudentSideBar";
 
-const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const StudentClassPage = () => {
   const [studentClass, setStudentClass] = useState(null);
@@ -17,7 +17,7 @@ const StudentClassPage = () => {
         const token = localStorage.getItem("studentAuthToken");
         // Get student info
         const studentRes = await fetch(`${baseUrl}/student/data`, {
-          headers: { "Authorization": `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         const studentData = await studentRes.json();
         if (!studentData.className) {
@@ -27,26 +27,34 @@ const StudentClassPage = () => {
         }
 
         // Get class details
-        const classRes = await fetch(`/api/teacher/class/${studentData.className}`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
+        const classRes = await fetch(
+          `/api/teacher/class/${studentData.className}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const classData = await classRes.json();
         setStudentClass(classData);
 
         // Get all courses to map course IDs to names
         const coursesRes = await fetch("/api/teacher/courses", {
-          headers: { "Authorization": `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         const coursesData = await coursesRes.json();
         const courseMap = {};
-        (Array.isArray(coursesData) ? coursesData : (coursesData.courses || [])).forEach(course => {
+        (Array.isArray(coursesData)
+          ? coursesData
+          : coursesData.courses || []
+        ).forEach((course) => {
           courseMap[course._id] = course.name;
         });
 
-        setCourses((classData.courses || []).map(id => ({
-          id,
-          name: courseMap[id] || "Unknown Course"
-        })));
+        setCourses(
+          (classData.courses || []).map((id) => ({
+            id,
+            name: courseMap[id] || "Unknown Course",
+          }))
+        );
         setLoading(false);
       } catch (err) {
         setMessage("Failed to load class information.");
@@ -81,8 +89,10 @@ const StudentClassPage = () => {
               <span className="font-semibold text-lg">Courses:</span>
               <ul className="list-disc ml-6 mt-2">
                 {courses.length > 0 ? (
-                  courses.map(course => (
-                    <li key={course.id} className="text-gray-800">{course.name}</li>
+                  courses.map((course) => (
+                    <li key={course.id} className="text-gray-800">
+                      {course.name}
+                    </li>
                   ))
                 ) : (
                   <li className="text-gray-400 italic">No courses assigned</li>

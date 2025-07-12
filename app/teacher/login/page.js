@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const baseUrl = "https://presencepalbackend-1.onrender.com";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");

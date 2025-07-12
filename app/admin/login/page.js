@@ -1,12 +1,12 @@
 "use client";
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const baseUrl = 'https://presencepalbackend-1.onrender.com';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -16,29 +16,29 @@ const LoginForm = () => {
 
     try {
       const response = await fetch(`${baseUrl}/api/auth/signin/email`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Login successful:', data);
+        console.log("Login successful:", data);
         // Store the auth token in localStorage so it can be used in future requests.
-        localStorage.setItem('authToken', data.token);
-        localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('email', email);
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("email", email);
 
         // Redirect to the teacher dashboard.
-        router.push('/admin/dashboard');
+        router.push("/admin/dashboard");
       } else {
-        alert('Invalid credentials');
+        alert("Invalid credentials");
       }
     } catch (error) {
-      console.error('Error logging in:', error);
-      alert('An error occurred. Please try again.');
+      console.error("Error logging in:", error);
+      alert("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -65,10 +65,12 @@ const LoginForm = () => {
           />
           <button
             type="submit"
-            className={`w-full py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

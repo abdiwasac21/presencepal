@@ -7,7 +7,7 @@ import Sidebar from "@/components/sideBar";
 import Header from "@/components/Header";
 
 const DEFAULT_PASSWORD = "default_password";
-const baseUrl = "https://presencepalbackend-1.onrender.com"; // Adjust this to your actual base URL
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL; // Adjust this to your actual base URL
 
 const CSVUpload = () => {
   const router = useRouter();
@@ -36,7 +36,7 @@ const CSVUpload = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
+
     if (students.length === 0) {
       setCsvError("No students to register");
       setLoading(false);
@@ -59,7 +59,7 @@ const CSVUpload = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`,
+          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
         },
         body: JSON.stringify(payload),
       });
@@ -69,7 +69,9 @@ const CSVUpload = () => {
         try {
           errorData = await response.json();
         } catch (err) {
-          errorData = { message: "Registration failed with status " + response.status };
+          errorData = {
+            message: "Registration failed with status " + response.status,
+          };
         }
         console.error("Registration failed:", errorData);
         setCsvError(errorData.message || "Batch registration failed");
@@ -91,7 +93,9 @@ const CSVUpload = () => {
       <div className="flex-1">
         <Header title="Batch Student Registration" />
         <div className="p-8 bg-gray-50 min-h-screen">
-          <h1 className="text-2xl font-bold mb-4">Batch Student Registration</h1>
+          <h1 className="text-2xl font-bold mb-4">
+            Batch Student Registration
+          </h1>
           {csvError && <p className="text-red-500 mb-4">{csvError}</p>}
           <div className="mb-4">
             <label htmlFor="csv-upload" className="block mb-2 font-semibold">

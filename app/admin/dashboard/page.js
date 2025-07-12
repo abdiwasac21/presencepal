@@ -1,10 +1,10 @@
 "use client";
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import Sidebar from '@/components/sideBar';
-import Header from '@/components/Header';
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import Sidebar from "@/components/sideBar";
+import Header from "@/components/Header";
 import { Users, Calendar, CheckSquare } from "lucide-react";
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar, Line } from "react-chartjs-2";
 import {
   Chart,
   CategoryScale,
@@ -14,21 +14,30 @@ import {
   LineElement,
   Title,
   Tooltip,
+  Legend,
+} from "chart.js";
+
+Chart.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
   Legend
-} from 'chart.js';
+);
 
-Chart.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend);
-
-const baseUrl = 'https://presencepalbackend-1.onrender.com';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 const attendanceData = {
-  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
   datasets: [
     {
-      label: 'Attendance %',
+      label: "Attendance %",
       data: [95, 97, 93, 98, 96],
-      borderColor: '#2563eb',
-      backgroundColor: 'rgba(37,99,235,0.2)',
+      borderColor: "#2563eb",
+      backgroundColor: "rgba(37,99,235,0.2)",
       tension: 0.4,
     },
   ],
@@ -46,17 +55,17 @@ const TeacherDashboard = () => {
   });
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem('loggedIn');
-    const email = localStorage.getItem('email');
+    const loggedIn = localStorage.getItem("loggedIn");
+    const email = localStorage.getItem("email");
     if (loggedIn && email) {
       setUser({ email });
     } else {
-      router.push('/teacher/login');
+      router.push("/teacher/login");
     }
   }, [router]);
 
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem("authToken");
     const fetchStats = async () => {
       try {
         const [studentsRes, classesRes] = await Promise.all([
@@ -84,22 +93,33 @@ const TeacherDashboard = () => {
         setTotalClasses(classesArray.length);
 
         // Generate engagement chart from class data
-        const labels = classesArray.map(cls => cls.name || cls.className || 'Unnamed Class');
-        const studentCounts = classesArray.map(cls => cls.students?.length || 0);
-        const colors = ['#6366f1', '#0ea5e9', '#22d3ee', '#38bdf8', '#4ade80', '#facc15', '#f87171'];
+        const labels = classesArray.map(
+          (cls) => cls.name || cls.className || "Unnamed Class"
+        );
+        const studentCounts = classesArray.map(
+          (cls) => cls.students?.length || 0
+        );
+        const colors = [
+          "#6366f1",
+          "#0ea5e9",
+          "#22d3ee",
+          "#38bdf8",
+          "#4ade80",
+          "#facc15",
+          "#f87171",
+        ];
 
         setEngagementData({
           labels,
           datasets: [
             {
-              label: 'Students per Class',
+              label: "Students per Class",
               data: studentCounts,
               backgroundColor: colors.slice(0, labels.length),
               borderRadius: 8,
             },
           ],
         });
-
       } catch (err) {
         console.error("Error fetching dashboard stats:", err);
         setTotalStudents(0);
@@ -113,16 +133,28 @@ const TeacherDashboard = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('email');
-    localStorage.removeItem('authToken');
-    router.push('/teacher/login');
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("email");
+    localStorage.removeItem("authToken");
+    router.push("/teacher/login");
   };
 
   const stats = [
-    { label: "Total Students", value: totalStudents, icon: <Users className="w-8 h-8 text-blue-500" /> },
-    { label: "Active Classes", value: totalClasses, icon: <Calendar className="w-8 h-8 text-emerald-500" /> },
-    { label: "Attendance Today", value: "97%", icon: <CheckSquare className="w-8 h-8 text-indigo-500" /> },
+    {
+      label: "Total Students",
+      value: totalStudents,
+      icon: <Users className="w-8 h-8 text-blue-500" />,
+    },
+    {
+      label: "Active Classes",
+      value: totalClasses,
+      icon: <Calendar className="w-8 h-8 text-emerald-500" />,
+    },
+    {
+      label: "Attendance Today",
+      value: "97%",
+      icon: <CheckSquare className="w-8 h-8 text-indigo-500" />,
+    },
   ];
 
   return (
@@ -131,12 +163,17 @@ const TeacherDashboard = () => {
       <div className="flex-1 flex flex-col">
         <Header title="Admin Dashboard" />
         <div className="p-6 md:p-10 flex-1">
-          <h1 className="text-3xl font-extrabold text-blue-700 mb-8 tracking-tight drop-shadow">Admin Dashboard</h1>
+          <h1 className="text-3xl font-extrabold text-blue-700 mb-8 tracking-tight drop-shadow">
+            Admin Dashboard
+          </h1>
 
           {/* Stats Panel */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
             {stats.map((stat) => (
-              <div key={stat.label} className="bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center">
+              <div
+                key={stat.label}
+                className="bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center"
+              >
                 <div className="mb-2">{stat.icon}</div>
                 <span className="text-4xl font-bold">{stat.value}</span>
                 <span className="text-gray-500 mt-2">{stat.label}</span>
@@ -147,7 +184,9 @@ const TeacherDashboard = () => {
           {/* Charts */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-white rounded-2xl shadow-xl p-6">
-              <div className="font-semibold text-blue-700 mb-4">Attendance Trends</div>
+              <div className="font-semibold text-blue-700 mb-4">
+                Attendance Trends
+              </div>
               <Line
                 data={attendanceData}
                 options={{
@@ -158,7 +197,9 @@ const TeacherDashboard = () => {
               />
             </div>
             <div className="bg-white rounded-2xl shadow-xl p-6">
-              <div className="font-semibold text-blue-700 mb-4">Students per Class</div>
+              <div className="font-semibold text-blue-700 mb-4">
+                Students per Class
+              </div>
               <Bar
                 data={engagementData}
                 options={{
@@ -172,12 +213,17 @@ const TeacherDashboard = () => {
 
           {/* Recent Students */}
           <div className="mt-12 bg-white rounded-2xl shadow-xl p-6">
-            <h2 className="text-xl font-semibold text-blue-700 mb-4">Recent Students</h2>
+            <h2 className="text-xl font-semibold text-blue-700 mb-4">
+              Recent Students
+            </h2>
             {recentStudents.length > 0 ? (
               <ul>
                 {recentStudents.map((student, index) => (
-                  <li key={index} className="text-gray-700 py-1 border-b last:border-none">
-                    {student.name || 'Unnamed'} – {student.universityId}
+                  <li
+                    key={index}
+                    className="text-gray-700 py-1 border-b last:border-none"
+                  >
+                    {student.name || "Unnamed"} – {student.universityId}
                   </li>
                 ))}
               </ul>
@@ -190,7 +236,9 @@ const TeacherDashboard = () => {
           <div className="mt-12 bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center">
             {user ? (
               <>
-                <p className="mb-2 text-lg">Welcome, <span className="font-semibold">{user.email}</span>!</p>
+                <p className="mb-2 text-lg">
+                  Welcome, <span className="font-semibold">{user.email}</span>!
+                </p>
                 <button
                   onClick={handleLogout}
                   className="px-6 py-2 text-white bg-red-600 rounded-xl hover:bg-red-700 transition font-semibold mt-2"
